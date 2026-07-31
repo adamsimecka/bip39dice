@@ -1637,11 +1637,11 @@ a:hover {
 }
 
 .demo-img.photo {
-  aspect-ratio: 2 / 1;
-  max-height: 132px;
+  aspect-ratio: 2.4 / 1;
+  max-height: 112px;
   width: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center 40%;
 }
 
 .demo-copy {
