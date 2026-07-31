@@ -90,7 +90,8 @@
       <section class="step" data-step="2" id="step-2" hidden>
         <h1>What you’ll need</h1>
         <p class="lede">
-          Practical path: dice + a Coldcard. No spare offline PC required.
+          This tutorial teaches the dice → word method. You only need a screen
+          right now. For a <em>real</em> seed later:
         </p>
         <div class="needs-grid" aria-hidden="true">
           <div class="need-card">
@@ -105,17 +106,7 @@
               </svg>
             </div>
             <strong>Dice</strong>
-            <span>Even one d6 is enough</span>
-          </div>
-          <div class="need-card">
-            <div class="need-icon" aria-hidden="true">
-              <svg viewBox="0 0 64 64" fill="none">
-                <rect x="14" y="10" width="36" height="44" rx="4" stroke="currentColor" stroke-width="3"/>
-                <path d="M22 22h20M22 32h20M22 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <strong>Coldcard</strong>
-            <span>Mk3 can do this on-device</span>
+            <span>Even one fair d6 is enough</span>
           </div>
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
@@ -125,7 +116,7 @@
               </svg>
             </div>
             <strong>Pen &amp; paper</strong>
-            <span>Write the backup words</span>
+            <span>Write rolls and words</span>
           </div>
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
@@ -135,13 +126,23 @@
                 <path d="M20 30h24M20 40h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
               </svg>
             </div>
-            <strong>Patience</strong>
-            <span>~50–99 rolls (don’t rush)</span>
+            <strong>Word list</strong>
+            <span>BIP-39 list (included here)</span>
+          </div>
+          <div class="need-card">
+            <div class="need-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" fill="none">
+                <rect x="10" y="14" width="44" height="32" rx="4" stroke="currentColor" stroke-width="3"/>
+                <path d="M10 42h44v4a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-4z" stroke="currentColor" stroke-width="3"/>
+              </svg>
+            </div>
+            <strong>A home for the seed</strong>
+            <span>Hardware wallet, or offline PC for word&nbsp;12</span>
           </div>
         </div>
         <p class="lede tight">
-          This site teaches the idea. For a real Mk3 wallet you’ll enter rolls
-          <em>on the Coldcard</em> — it builds the seed (including word 12).
+          You’ll choose a real-world path at the end (paper, Coldcard, or another
+          device that accepts dice entropy).
         </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
@@ -255,19 +256,11 @@
           </div>
         </div>
 
-        <div class="path-cards">
-          <div class="path-card">
-            <h3>Paper method</h3>
-            <p>Repeat the worksheet 11 times, then use an offline tool for word 12.</p>
-          </div>
-          <div class="path-card featured">
-            <h3>Coldcard (easier)</h3>
-            <p>
-              Enter many dice rolls (1–6) on the device. It builds all 12 words for you —
-              including word 12. No separate computer.
-            </p>
-          </div>
-        </div>
+        <p class="lede tight">
+          How you generate the full seed depends on your setup. Next you’ll see a
+          practice 12-word example, then real-world options (paper, Coldcard, and
+          more).
+        </p>
 
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
@@ -289,77 +282,184 @@
         </div>
         <div class="nav-row" id="practice-nav" hidden>
           <button type="button" class="btn-ghost" data-back>Back</button>
-          <button type="button" class="btn-primary" data-next>How to do this for real</button>
+          <button type="button" class="btn-primary" data-next>Do it for real</button>
         </div>
         <p class="hint-wait" id="practice-hint">Generate once to continue</p>
       </section>
 
-      <!-- ===== STEP 7: Real world ===== -->
+      <!-- ===== STEP 7: Real world — general + paths ===== -->
       <section class="step" data-step="7" id="step-7" hidden>
-        <div class="visual" aria-hidden="true">
-          <div class="offline-icons">
-            <div class="off-item">
-              <div class="off-emoji">🎲</div>
-              <span>Dice</span>
-            </div>
-            <div class="off-plus">+</div>
-            <div class="off-item">
-              <div class="off-emoji">❄️</div>
-              <span>Coldcard</span>
-            </div>
-            <div class="off-plus">+</div>
-            <div class="off-item">
-              <div class="off-emoji">📝</div>
-              <span>Backup</span>
-            </div>
+        <h1>Do it for real</h1>
+        <p class="lede">
+          Never type a funded seed (or the rolls behind it) into this website.
+          Pick a path that fits your setup.
+        </p>
+
+        <div class="path-tabs" role="tablist" aria-label="Real-world paths">
+          <button type="button" class="path-tab active" data-path="paper" role="tab" aria-selected="true">
+            Paper
+          </button>
+          <button type="button" class="path-tab" data-path="coldcard" role="tab" aria-selected="false">
+            Coldcard
+          </button>
+        </div>
+
+        <!-- Paper path -->
+        <div class="path-panel active" id="path-paper" role="tabpanel">
+          <h2 class="path-heading">Paper + offline computer</h2>
+          <p class="lede tight">
+            Best if you don’t trust any hardware wallet’s RNG and want full
+            control. Works with any BIP-39 wallet afterward.
+          </p>
+          <ol class="real-steps">
+            <li>
+              Print the BIP-39 English list (or use an offline copy). You practiced
+              looking words up on this site.
+            </li>
+            <li>
+              On paper, make words <strong>1–11</strong> with the worksheet method
+              (11 rolls each → odd/even → sum → list).
+            </li>
+            <li>
+              For word <strong>12</strong>, use an air-gapped machine and
+              <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
+                >veebch/Bip39-Dice</a
+              >
+              (<code>24thword.py</code>) — or another offline BIP-39 tool. Never do
+              this on a normal online computer for a seed you’ll fund.
+            </li>
+            <li>
+              Pick one valid 12th word with more dice if the tool gives candidates.
+            </li>
+            <li>
+              Backup on metal or paper. Restore on a spare wallet and send a tiny
+              test amount before moving real funds.
+            </li>
+          </ol>
+          <a
+            class="btn-primary link-btn"
+            href="https://github.com/veebch/Bip39-Dice"
+            target="_blank"
+            rel="noopener"
+            >veebch/Bip39-Dice ↗</a
+          >
+        </div>
+
+        <!-- Coldcard path -->
+        <div class="path-panel" id="path-coldcard" role="tabpanel" hidden>
+          <h2 class="path-heading">COLDCARD dice-only seed</h2>
+          <p class="lede tight">
+            The device turns your dice rolls into a full BIP-39 seed (including
+            the checksum word). You do <strong>not</strong> need a second computer
+            to create it. This is especially relevant for
+            <strong>Mk3</strong> users after Coinkite’s seed-generation advisory.
+          </p>
+
+          <div class="callout-box">
+            <strong>Mk3 note</strong>
+            <p>
+              If you generated a seed with the Mk3’s own RNG on firmware 4.0.1+,
+              Coinkite warned funds may be at risk. A dice-only seed avoids that
+              RNG. Mk4 / Q / Mk5 are not affected by that advisory (per Coinkite’s
+              early analysis) but can still use dice rolls if you want.
+            </p>
+          </div>
+
+          <h3 class="subhead">Before you start</h3>
+          <ul class="real-steps bullets-plain">
+            <li>Use an <strong>empty</strong> Coldcard (or accept wiping the current seed).</li>
+            <li>Have fair six-sided dice and pen/paper for the backup.</li>
+            <li>
+              Plan enough rolls:
+              <strong>≥50</strong> for a 12-word seed,
+              <strong>≥99</strong> for 24-word (Coinkite’s minimums). More is fine.
+            </li>
+            <li>Do this in private — no cameras on the screen or dice.</li>
+          </ul>
+
+          <h3 class="subhead">Create the seed (usual menu)</h3>
+          <ol class="real-steps">
+            <li>Power on the Coldcard and unlock with your PIN.</li>
+            <li>
+              Go to
+              <strong>New Seed Words → Advanced</strong>.
+            </li>
+            <li>
+              Choose
+              <strong>12 Word Dice Roll</strong>
+              or
+              <strong>24 Word Dice Roll</strong>.
+            </li>
+            <li>
+              Roll a physical die. On the Coldcard keypad, press the matching
+              number <strong>1–6</strong>. Repeat until you meet the minimum (or
+              more). The device shows a running hash of your rolls.
+            </li>
+            <li>
+              When finished, the Coldcard derives the seed and shows the BIP-39
+              words. <strong>Write every word down carefully</strong> (metal or
+              paper).
+            </li>
+            <li>
+              Complete Coldcard’s backup confirmation (it will ask you to re-enter
+              words to prove the backup is correct).
+            </li>
+          </ol>
+
+          <h3 class="subhead">Mk3 advisory path (dice-only import)</h3>
+          <p class="lede tight">
+            Coinkite also documents a dedicated path that hashes rolls directly and
+            does not use the device generator:
+          </p>
+          <ol class="real-steps">
+            <li>Empty Mk3, preferably on a supported firmware (see advisory).</li>
+            <li>
+              <strong>Import Existing → Dice Rolls</strong>
+            </li>
+            <li>
+              Enter at least <strong>99</strong> independent rolls of a fair d6
+              (press 1–6 after each physical roll).
+            </li>
+            <li>Write and confirm the backup as above.</li>
+          </ol>
+
+          <h3 class="subhead">After the seed exists</h3>
+          <ol class="real-steps">
+            <li>Export/watch-only to your coordinator if you use one.</li>
+            <li>Verify a receive address on the Coldcard screen.</li>
+            <li>Send a small test amount; confirm it arrives.</li>
+            <li>Only then move larger amounts.</li>
+          </ol>
+
+          <h3 class="subhead">Optional: verify the math</h3>
+          <p class="lede tight">
+            To check the Coldcard isn’t lying about dice→words, Coinkite publishes
+            verification tools. Only do this with <em>test</em> rolls, or on a
+            truly air-gapped machine — never paste funded rolls into an online PC.
+          </p>
+          <div class="link-stack">
+            <a
+              href="https://coldcard.com/docs/verifying-dice-roll-math/"
+              target="_blank"
+              rel="noopener"
+              >Verifying dice roll math ↗</a
+            >
+            <a
+              href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
+              target="_blank"
+              rel="noopener"
+              >Mk3 security advisory ↗</a
+            >
           </div>
         </div>
-        <h1>Yes — this works on Mk3</h1>
-        <p class="lede">
-          Coinkite’s Mk3 advisory specifically allows a
-          <strong>dice-only</strong> seed so you don’t use the device RNG.
-          No second computer required to create the seed.
-        </p>
-        <ol class="real-steps">
-          <li>
-            On an empty Mk3: use the
-            <strong>dice rolls</strong> seed path (not “new wallet” random)
-          </li>
-          <li>
-            Enter at least <strong>50 rolls</strong> for 12 words, or
-            <strong>99</strong> for 24 words (Coinkite’s minimums)
-          </li>
-          <li>Write the words the Coldcard shows — verify the backup</li>
-          <li>Test a small receive before moving everything</li>
-        </ol>
-        <p class="lede tight">
-          Never type real rolls or a funded seed into this website. The Coldcard
-          is the computer.
-        </p>
-        <a
-          class="btn-primary link-btn"
-          href="https://coldcard.com/docs/verifying-dice-roll-math/"
-          target="_blank"
-          rel="noopener"
-        >
-          Coldcard dice-roll docs ↗
-        </a>
-        <a
-          class="btn-ghost full link-btn"
-          href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
-          target="_blank"
-          rel="noopener"
-          style="display: block; text-align: center; margin-bottom: 1rem"
-        >
-          Mk3 security advisory ↗
-        </a>
-        <p class="credit">
-          Paper-only method (no hardware wallet):
+
+        <p class="credit" style="margin-top: 1.25rem">
+          Method taught in this tutorial follows
           <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
             >veebch/Bip39-Dice</a
           >
-          — that path needs an air-gapped machine for the last word. Optional, not
-          required if you use Coldcard dice entry.
+          (paper calculator + checksum tools). Not affiliated with Coinkite /
+          COLDCARD.
         </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>

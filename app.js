@@ -591,6 +591,29 @@ async function generatePractice(totalWords = 12) {
 $('#btn-gen-seed')?.addEventListener('click', () => generatePractice(12));
 $('#btn-gen-again')?.addEventListener('click', () => generatePractice(12));
 
+// Real-world path tabs (paper vs Coldcard)
+function showPath(name) {
+  $$('.path-tab').forEach((t) => {
+    const on = t.dataset.path === name;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  const paper = $('#path-paper');
+  const cold = $('#path-coldcard');
+  if (paper) {
+    paper.hidden = name !== 'paper';
+    paper.classList.toggle('active', name === 'paper');
+  }
+  if (cold) {
+    cold.hidden = name !== 'coldcard';
+    cold.classList.toggle('active', name === 'coldcard');
+  }
+}
+
+$$('.path-tab').forEach((tab) => {
+  tab.addEventListener('click', () => showPath(tab.dataset.path));
+});
+
 // Fix: global nav for steps 0-3,5-7 - step-4 blocked entirely which is correct
 // But steps with data-next inside step-4 aren't needed.
 
