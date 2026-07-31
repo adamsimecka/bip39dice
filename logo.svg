@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 40" fill="none">
-  <!-- Die mark -->
-  <rect x="1" y="4" width="32" height="32" rx="7" fill="#1a1a2e" stroke="#f7931a" stroke-width="2"/>
-  <circle cx="11" cy="14" r="2.2" fill="#f4f4fb"/>
-  <circle cx="23" cy="14" r="2.2" fill="#f4f4fb"/>
-  <circle cx="17" cy="20" r="2.2" fill="#f7931a"/>
-  <circle cx="11" cy="26" r="2.2" fill="#f4f4fb"/>
-  <circle cx="23" cy="26" r="2.2" fill="#f4f4fb"/>
-  <!-- Wordmark -->
-  <text x="44" y="27" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700" fill="#f4f4fb" letter-spacing="-0.02em">bip39dice</text>
-  <text x="152" y="27" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="500" fill="#9a9ab8" letter-spacing="-0.02em">.com</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 40" fill="none">
+  <rect x="1.5" y="5.5" width="29" height="29" rx="3" fill="#fffaf0" stroke="#1c1915" stroke-width="2"/>
+  <circle cx="10.5" cy="14.5" r="2" fill="#1c1915"/>
+  <circle cx="21.5" cy="14.5" r="2" fill="#1c1915"/>
+  <circle cx="16" cy="20" r="2" fill="#c23b22"/>
+  <circle cx="10.5" cy="25.5" r="2" fill="#1c1915"/>
+  <circle cx="21.5" cy="25.5" r="2" fill="#1c1915"/>
+  <text x="40" y="27" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="600" fill="#1c1915">bip39dice</text>
+  <text x="148" y="27" font-family="Georgia, 'Times New Roman', serif" font-size="16" font-weight="400" fill="#6b645a">.com</text>
 </svg>
