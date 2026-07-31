@@ -3,857 +3,175 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BIP-39 Dice · Generate a Bitcoin Seed with Physical Dice</title>
+    <title>BIP-39 Dice · Make a Bitcoin seed word with dice</title>
     <meta
       name="description"
-      content="Interactive walkthrough of offline BIP-39 seed generation with physical dice (12- or 24-word). Practice the veebch method, understand the checksum, then generate for real air-gapped."
+      content="Simple demo: roll dice, get a Bitcoin seed word. Learn the offline dice method. Practice only — never fund a seed from a website."
     />
     <meta name="theme-color" content="#07070f" />
     <link rel="canonical" href="https://bip39dice.com/" />
     <meta property="og:url" content="https://bip39dice.com/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="BIP-39 Dice · Bitcoin seed from physical dice" />
+    <meta property="og:title" content="BIP-39 Dice" />
     <meta
       property="og:description"
-      content="Interactive lab for offline BIP-39 seed generation with dice — 12-word (default) or 24-word. Inspired by veebch/Bip39-Dice."
-    />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="BIP-39 Dice" />
-    <meta
-      name="twitter:description"
-      content="See how dice make a Bitcoin seed — interactive BIP-39 practice lab."
+      content="Roll dice → get a Bitcoin seed word. Simple practice lab."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   </head>
   <body>
-    <header class="site-header">
-      <div class="header-inner">
-        <a class="brand" href="/" aria-label="bip39dice.com home">
-          <img src="logo.svg" alt="bip39dice.com" class="brand-logo" />
-        </a>
-        <nav class="header-links" aria-label="On this page">
-          <a href="#why">Why</a>
-          <a href="#lab">Lab</a>
-          <a href="#build">Build</a>
-          <a href="#real">Offline</a>
-          <a href="#credits">Credits</a>
-          <a
-            class="github-link"
-            href="https://github.com/adamsimecka/bip39dice"
-            target="_blank"
-            rel="noopener"
-            aria-label="Source on GitHub"
-          >
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <path
-                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
-              />
-            </svg>
-            GitHub
-          </a>
-        </nav>
-      </div>
+    <header class="top">
+      <a class="logo" href="/">
+        <img src="logo.svg" alt="bip39dice.com" />
+      </a>
+      <a
+        class="gh"
+        href="https://github.com/adamsimecka/bip39dice"
+        target="_blank"
+        rel="noopener"
+        >GitHub</a
+      >
     </header>
 
-    <main>
-      <section class="hero" id="top">
-        <div class="hero-kicker">
-          <span aria-hidden="true">⚠</span>
-          Coldcard Mk3 advisory · generate entropy you can verify
-        </div>
-        <h1>See how <span>dice make a Bitcoin seed</span></h1>
-        <p class="hero-lead">
-          An interactive walkthrough of the offline BIP-39 dice method published by
-          <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-            ><strong>veebch/Bip39-Dice</strong></a
-          >
-          — paper calculator, odd/even bits, powers of two, and checksum candidates.
-          Practice here (12-word by default, or 24-word). Generate for real only
-          offline, with physical dice.
+    <main class="wrap">
+      <!-- Intro -->
+      <section class="block intro">
+        <p class="eyebrow">Practice only · not a real wallet</p>
+        <h1>How dice make a Bitcoin seed word</h1>
+        <p class="lede">
+          A Bitcoin seed is a list of secret words. Each word comes from rolling
+          dice. Try it once — takes a few seconds.
         </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary btn-lg" href="#lab">Open the dice lab</a>
-          <a class="btn btn-secondary btn-lg" href="#why">Why this matters now</a>
-          <a
-            class="btn btn-ghost btn-lg"
-            href="https://github.com/adamsimecka/bip39dice"
-            target="_blank"
-            rel="noopener"
-            >View source</a
-          >
-        </div>
-
-        <div class="advisory" role="note">
-          <div class="advisory-icon" aria-hidden="true">!</div>
-          <div>
-            <h3>Coldcard Mk3 seed-generation warning (July 30, 2026)</h3>
-            <p>
-              Coinkite warned that seeds generated on a
-              <strong>COLDCARD Mk3</strong> running firmware
-              <strong>4.0.1 or later</strong> may put funds at risk. Mk4, Q, and
-              Mk5 are not affected based on early analysis. One recommended
-              advanced path is a
-              <strong>dice-only seed</strong> that does not use the device RNG.
-              Read the
-              <a
-                href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
-                target="_blank"
-                rel="noopener"
-                >official advisory</a
-              >
-              before moving funds.
-            </p>
-          </div>
-        </div>
       </section>
 
-      <!-- Global length toggle -->
-      <div class="length-bar card" id="length-bar">
-        <div>
-          <strong>Seed length</strong>
-          <p class="hint" style="margin: 0.2rem 0 0">
-            Default is <strong>12 words</strong> (128-bit entropy). Switch anytime
-            before funding a practice seed — resets the builder.
-          </p>
-        </div>
-        <div class="length-toggle" role="group" aria-label="Mnemonic length">
-          <button type="button" class="active" data-length="12">12 words</button>
-          <button type="button" data-length="24">24 words</button>
-        </div>
-      </div>
+      <!-- The one interactive thing -->
+      <section class="block card" id="try">
+        <h2>1. Make one word</h2>
+        <p class="sub">
+          Click the button. We roll 11 dice and turn them into one word from the
+          official Bitcoin word list.
+        </p>
 
-      <!-- Stepper -->
-      <div class="stepper" role="tablist" aria-label="Tutorial steps" id="stepper">
-        <button class="step-pill active" data-step="0" role="tab" aria-selected="true">
-          <span class="num">1</span> Why dice
+        <div class="die-row" id="die-row" aria-hidden="true"></div>
+
+        <button type="button" class="btn-big" id="btn-roll">
+          Roll the dice
         </button>
-        <button class="step-pill" data-step="1" role="tab" aria-selected="false">
-          <span class="num">2</span> How BIP-39 works
-        </button>
-        <button class="step-pill" data-step="2" role="tab" aria-selected="false">
-          <span class="num">3</span> Dice lab
-        </button>
-        <button class="step-pill" data-step="3" role="tab" aria-selected="false">
-          <span class="num">4</span> Build a practice seed
-        </button>
-        <button class="step-pill" data-step="4" role="tab" aria-selected="false">
-          <span class="num">5</span> Do it for real
-        </button>
-        <button class="step-pill" data-step="5" role="tab" aria-selected="false">
-          <span class="num">6</span> Credits
-        </button>
-      </div>
 
-      <!-- PANEL 0: Why -->
-      <section class="panel active" data-panel="0" id="why" role="tabpanel">
-        <div class="section-head">
-          <h2>Why generate a seed with dice?</h2>
-          <p>
-            A hardware wallet’s random-number generator is a black box. Dice let
-            you watch every bit of entropy get created — physics, not firmware.
-          </p>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <h3 style="margin-top: 0">The trust problem</h3>
-            <p style="color: var(--text-muted); margin-bottom: 0">
-              When a device creates your seed, you trust that its entropy is
-              truly random, not backdoored, and not weakened by a firmware bug.
-              The Mk3 advisory is a live reminder: device-generated seeds can
-              become a single point of failure you cannot audit after the fact.
-            </p>
-          </div>
-          <div class="card">
-            <h3 style="margin-top: 0">What dice buy you</h3>
-            <p style="color: var(--text-muted); margin-bottom: 0">
-              Physical dice (ideally casino-grade) produce randomness you can
-              observe. Convert rolls → bits → BIP-39 words with a method you can
-              recompute offline — the same approach documented in
-              <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-                >veebch/Bip39-Dice</a
-              >.
-            </p>
-          </div>
-        </div>
-
-        <div class="stats">
-          <div class="stat">
-            <div class="n">2,048</div>
-            <div class="l">BIP-39 words</div>
-          </div>
-          <div class="stat">
-            <div class="n">11</div>
-            <div class="l">Dice rolls per word</div>
-          </div>
-          <div class="stat">
-            <div class="n" data-dyn="entropy-plus-checksum">11 + 1</div>
-            <div class="l">Entropy words + checksum</div>
-          </div>
-          <div class="stat">
-            <div class="n" data-dyn="entropy-bits">128</div>
-            <div class="l">Bits of entropy</div>
-          </div>
-        </div>
-
-        <div class="callout callout-danger">
-          <strong>This site is a practice lab only.</strong> Never use a seed
-          phrase generated (or typed) on an internet-connected device for real
-          funds. Learn the method here, then repeat it offline with paper and
-          physical dice.
-        </div>
-
-        <div class="nav-row">
-          <span></span>
-          <button class="btn btn-primary" data-go="1">Next: How BIP-39 works →</button>
-        </div>
-      </section>
-
-      <!-- PANEL 1: How BIP-39 works -->
-      <section class="panel" data-panel="1" id="how" role="tabpanel">
-        <div class="section-head">
-          <h2 id="how-title">How a dice seed becomes 12 words</h2>
-          <p id="how-lead">
-            Each BIP-39 word encodes 11 bits. For a <strong>12-word</strong> seed
-            you need <strong>128 bits</strong> of entropy plus a
-            <strong>4-bit</strong> checksum baked into the last word.
-          </p>
-        </div>
-
-        <div class="pipeline" aria-hidden="false">
-          <div class="pipe-step">
-            <div class="emoji">🎲</div>
-            <h4>1. Throw</h4>
-            <p>11 six-sided dice per word</p>
-          </div>
-          <div class="pipe-step">
-            <div class="emoji">01</div>
-            <h4>2. Bits</h4>
-            <p>Odd = 0 · Even = 1</p>
-          </div>
-          <div class="pipe-step">
-            <div class="emoji">Σ</div>
-            <h4>3. Index</h4>
-            <p>Powers of 2 → 0–2047</p>
-          </div>
-          <div class="pipe-step">
-            <div class="emoji">Aa</div>
-            <h4>4. Word</h4>
-            <p>Look up BIP-39 list</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin-top: 0">The paper calculator (veebch method)</h3>
-          <p style="color: var(--text-muted)">
-            From the
-            <a
-              href="https://github.com/veebch/Bip39-Dice/blob/master/BIP39DiceManualCalculator.pdf"
-              target="_blank"
-              rel="noopener"
-              >BIP39DiceManualCalculator.pdf</a
-            >
-            in
-            <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-              >veebch/Bip39-Dice</a
-            >: for each of the first
-            <strong><span data-dyn="entropy-words">11</span> words</strong>, roll
-            11 dice and map:
-          </p>
-          <ul style="color: var(--text-muted); margin: 0.5rem 0 1rem">
-            <li>
-              <strong style="color: var(--text)">Odd face</strong> (1, 3, 5) → bit
-              <code>0</code>
-            </li>
-            <li>
-              <strong style="color: var(--text)">Even face</strong> (2, 4, 6) → bit
-              <code>1</code>
-            </li>
-          </ul>
-          <p style="color: var(--text-muted)">
-            Multiply each bit by powers of two (LSB first):
-            <code style="color: var(--purple-soft)"
-              >1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024</code
-            >
-            and sum them. That sum is the word index on the official list (0 =
-            <em>abandon</em> … 2047 = <em>zoo</em>).
-          </p>
-          <p style="color: var(--text-muted); margin-bottom: 0">
-            The
-            <strong
-              ><span data-dyn="last-word-n">12</span>th word</strong
-            >
-            is special: only
-            <strong><span data-dyn="candidates">128</span></strong> of the 2048
-            words produce a valid checksum. Offline, run
-            <a
-              href="https://github.com/veebch/Bip39-Dice/blob/master/24thword.py"
-              target="_blank"
-              rel="noopener"
-              ><code>24thword.py</code></a
-            >
-            (accepts 11 or 23 words), then pick one candidate with more dice.
-          </p>
-        </div>
-
-        <div class="callout callout-info" style="margin-top: 1rem">
-          <strong>12 vs 24:</strong> 12 words → 128-bit entropy,
-          <span data-dyn="candidates">128</span> last-word candidates, and a
-          <span data-dyn="checksum-bits">4</span>-bit checksum. 24 words → 256-bit
-          entropy, 8 last-word candidates, and an 8-bit checksum. Both are valid
-          BIP-39; many people start with 12.
-        </div>
-
-        <div class="nav-row">
-          <button class="btn btn-secondary" data-go="0">← Back</button>
-          <button class="btn btn-primary" data-go="2">Next: Try the dice lab →</button>
-        </div>
-      </section>
-
-      <!-- PANEL 2: Dice lab -->
-      <section class="panel" data-panel="2" id="lab" role="tabpanel">
-        <div class="section-head">
-          <h2>Dice lab — make one word</h2>
-          <p>
-            Watch a single BIP-39 word form from 11 rolls — the atomic step from
-            the veebch paper calculator. You’ll repeat this
-            <strong><span data-dyn="lab-repeat">11</span> times</strong> for a
-            real seed’s entropy words.
-          </p>
-        </div>
-
-        <div class="practice-seal" style="margin-bottom: 1rem">
-          Practice mode · not a real wallet
-        </div>
-
-        <div class="mode-toggle" role="group" aria-label="Roll input mode">
-          <button type="button" class="active" data-mode="auto" id="mode-auto">
-            Auto-roll dice
+        <div class="result" id="result" hidden>
+          <p class="result-label">Your practice word</p>
+          <p class="result-word" id="result-word">—</p>
+          <p class="result-meta" id="result-meta"></p>
+          <button type="button" class="linkish" id="btn-show-math">
+            Show the simple math
           </button>
-          <button type="button" data-mode="manual" id="mode-manual">
-            Enter physical rolls
+          <div class="math" id="math" hidden>
+            <ol>
+              <li>Odd numbers → 0 · Even numbers → 1</li>
+              <li>Those bits make a number from 0 to 2047</li>
+              <li>That number picks a word on the BIP-39 list</li>
+            </ol>
+            <p class="mono" id="math-detail"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The big picture -->
+      <section class="block card">
+        <h2>2. A full seed needs 12 words</h2>
+        <ol class="simple-steps">
+          <li>
+            <strong>Words 1–11</strong> — roll dice like above (for real: use
+            paper and physical dice).
+          </li>
+          <li>
+            <strong>Word 12</strong> — calculated from the first 11 (a checksum).
+            Offline tools list the valid choices.
+          </li>
+        </ol>
+        <p class="sub">
+          That’s it. 12 secret words = your wallet. Lose them and the bitcoin is
+          gone. Share them and someone can steal it.
+        </p>
+
+        <button type="button" class="btn-secondary" id="btn-practice-full">
+          Practice a full 12-word seed
+        </button>
+
+        <div id="full-seed" class="full-seed" hidden>
+          <p class="warn-inline">
+            Demo only. Do <strong>not</strong> put money on this seed.
+          </p>
+          <ol class="seed-list" id="seed-list"></ol>
+          <button type="button" class="linkish" id="btn-practice-again">
+            Roll a new practice seed
           </button>
         </div>
 
-        <div class="lab-layout">
-          <div class="card">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-              "
-            >
-              <h3 style="margin: 0">Eleven dice</h3>
-              <span class="hint" id="lab-status">Click a die or roll all</span>
-            </div>
-
-            <div class="die-grid" id="die-grid" aria-label="Eleven practice dice"></div>
-
-            <div class="lab-controls">
-              <button class="btn btn-primary" id="btn-roll-all">Roll all 11</button>
-              <button class="btn btn-secondary" id="btn-roll-one">Roll next empty</button>
-              <button class="btn btn-ghost" id="btn-clear">Clear</button>
-            </div>
-
-            <div id="manual-panel" hidden>
-              <p class="hint">Tap the face of your physical die for the next empty slot:</p>
-              <div class="manual-row" id="manual-faces">
-                <button type="button" class="face-btn" data-face="1">1</button>
-                <button type="button" class="face-btn" data-face="2">2</button>
-                <button type="button" class="face-btn" data-face="3">3</button>
-                <button type="button" class="face-btn" data-face="4">4</button>
-                <button type="button" class="face-btn" data-face="5">5</button>
-                <button type="button" class="face-btn" data-face="6">6</button>
-              </div>
-            </div>
-
-            <div class="callout callout-warn" style="margin-top: 1rem">
-              <strong>Mapping (veebch):</strong> Odd faces (1, 3, 5) →
-              <code>0</code> · Even faces (2, 4, 6) → <code>1</code>. Identical to
-              the Bip39-Dice paper calculator.
-            </div>
-          </div>
-
-          <div class="card result-stack">
-            <div>
-              <h3 style="margin: 0 0 0.75rem">Live calculation</h3>
-              <div style="overflow-x: auto">
-                <table class="bit-table" id="bit-table">
-                  <thead>
-                    <tr>
-                      <th>Die</th>
-                      <th>Face</th>
-                      <th>Bit</th>
-                      <th>Power</th>
-                      <th>Value</th>
-                    </tr>
-                  </thead>
-                  <tbody id="bit-tbody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="result-box">
-              <div class="label">Equation</div>
-              <div class="equation" id="equation">—</div>
-            </div>
-
-            <div class="result-box">
-              <div class="label">Word index (0–2047)</div>
-              <div class="value" id="word-index">—</div>
-              <div class="sub">GitHub line number = index + 1</div>
-            </div>
-
-            <div class="result-box">
-              <div class="label">BIP-39 word</div>
-              <div class="value word" id="word-result">—</div>
-              <div class="sub" id="word-sub">Roll all 11 dice to reveal</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="nav-row">
-          <button class="btn btn-secondary" data-go="1">← Back</button>
-          <button class="btn btn-primary" data-go="3">Next: Build a full practice seed →</button>
-        </div>
-      </section>
-
-      <!-- PANEL 3: Build practice seed -->
-      <section class="panel" data-panel="3" id="build" role="tabpanel">
-        <div class="section-head">
-          <h2>Build a full practice seed</h2>
-          <p id="build-lead">
-            Generate <strong>11 entropy words</strong> the same way, then compute
-            the <strong>128 valid checksum candidates</strong> for word 12 — the
-            same algorithm as
-            <a
-              href="https://github.com/veebch/Bip39-Dice/blob/master/24thword.py"
-              target="_blank"
-              rel="noopener"
-              ><code>24thword.py</code></a
-            >
-            from veebch/Bip39-Dice.
-          </p>
-        </div>
-
-        <div class="practice-seal" style="margin-bottom: 1rem">
-          Demo seed · do not fund · wipe when done
-        </div>
-
-        <div class="card">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              gap: 1rem;
-              flex-wrap: wrap;
-            "
-          >
-            <div>
-              <h3 style="margin: 0 0 0.25rem">Progress</h3>
-              <p class="hint" id="build-status" style="margin: 0">
-                0 of 11 entropy words · then pick a checksum word
-              </p>
-            </div>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
-              <button class="btn btn-primary" id="btn-gen-next">Generate next word</button>
-              <button class="btn btn-secondary" id="btn-gen-all">Generate all 11</button>
-              <button class="btn btn-ghost" id="btn-reset-seed">Reset</button>
-            </div>
-          </div>
-
-          <div class="progress-bar" aria-hidden="true"><span id="seed-progress"></span></div>
-
-          <div class="word-slots" id="word-slots"></div>
-        </div>
-
-        <div class="card" id="checksum-card" hidden>
-          <h3 style="margin-top: 0" id="checksum-heading">Step 2 — the 12th (checksum) word</h3>
-          <p style="color: var(--text-muted)">
-            From your <span data-dyn="entropy-words">11</span> words, SHA-256
-            allows exactly
-            <strong><span data-dyn="candidates">128</span> valid final words</strong>.
-            Offline you’d run veebch’s
-            <code>python3 24thword.py</code> on an air-gapped machine, then pick
-            one with more dice.
-          </p>
-
-          <div id="candidates-loading" hidden class="hint">Computing checksum candidates…</div>
-          <p class="hint" id="candidates-meta"></p>
-
-          <div class="candidate-toolbar">
-            <input
-              type="search"
-              id="candidate-filter"
-              class="candidate-search"
-              placeholder="Filter candidates…"
-              autocomplete="off"
-              spellcheck="false"
-            />
-          </div>
-          <div class="candidates" id="candidates"></div>
-
-          <div id="pick-ui" hidden style="margin-top: 1.25rem">
-            <h4 style="margin: 0 0 0.5rem">Pick with dice (practice)</h4>
-            <p class="hint">
-              Rolls <strong><span data-dyn="pick-bits">7</span></strong> dice as
-              odd/even bits (LSB first — same mapping as the paper method) to
-              choose among
-              <span data-dyn="candidates">128</span> candidates. Or click a
-              candidate above.
-            </p>
-            <div class="lab-controls">
-              <button class="btn btn-secondary" id="btn-pick-dice">Roll dice to pick</button>
-              <span class="hint" id="pick-status"></span>
-            </div>
-          </div>
-
-          <div id="final-seed" hidden style="margin-top: 1.25rem">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 0.75rem;
-                flex-wrap: wrap;
-                margin-bottom: 0.75rem;
-              "
-            >
-              <h4 style="margin: 0" id="final-seed-title">Practice mnemonic (12 words)</h4>
-              <button class="btn btn-sm btn-danger" id="btn-reveal">Reveal / hide</button>
-            </div>
-            <div class="mnemonic-final reveal-blur" id="mnemonic-text"></div>
-            <div class="callout callout-danger" style="margin-top: 1rem">
-              <strong>Destroy this phrase when you’re done learning.</strong>
-              It was created in a browser. Anyone who saw this screen — or any
-              extension that can read the page — could steal funds if you ever
-              deposited to it.
-            </div>
-          </div>
-        </div>
-
-        <div class="nav-row">
-          <button class="btn btn-secondary" data-go="2">← Back to lab</button>
-          <button class="btn btn-primary" data-go="4">Next: Do it for real →</button>
-        </div>
-      </section>
-
-      <!-- PANEL 4: Do it for real -->
-      <section class="panel" data-panel="4" id="real" role="tabpanel">
-        <div class="section-head">
-          <h2>Do it for real (offline checklist)</h2>
+        <details class="more">
+          <summary>Want 24 words instead?</summary>
           <p>
-            Use this site to learn. Use this checklist when real sats are on the
-            line. Tick items as you prepare — state stays in this browser only.
+            Same idea, but 23 dice-words + 1 checksum word (256-bit security).
+            Most beginners are fine with 12.
           </p>
-        </div>
-
-        <div class="callout callout-danger">
-          <strong>Never enter a funded seed or real dice rolls into this website.</strong>
-          Real generation happens on paper + air-gapped hardware only.
-        </div>
-
-        <div class="card">
-          <ul class="checklist" id="real-checklist">
-            <li data-id="c1">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>Private room, no cameras</h4>
-                <p>Phones out of the room. Cover laptop cameras. No smart speakers.</p>
-              </div>
-            </li>
-            <li data-id="c2">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>Fair dice + pen + paper</h4>
-                <p>
-                  Casino-grade d6 recommended. Print veebch’s
-                  <a
-                    href="https://github.com/veebch/Bip39-Dice/blob/master/BIP39DiceManualCalculator.pdf"
-                    target="_blank"
-                    rel="noopener"
-                    >BIP39DiceManualCalculator.pdf</a
-                  >
-                  and the
-                  <a
-                    href="https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt"
-                    target="_blank"
-                    rel="noopener"
-                    >BIP-39 English wordlist</a
-                  >
-                  before you go offline.
-                </p>
-              </div>
-            </li>
-            <li data-id="c3">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>
-                  Generate
-                  <span data-dyn="entropy-words">11</span> words on paper
-                </h4>
-                <p>
-                  For each word: roll 11 dice → odd/even bits → sum powers of 2 →
-                  look up the word. Double-check every index.
-                </p>
-              </div>
-            </li>
-            <li data-id="c4">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>Compute the last word offline</h4>
-                <p>
-                  On an air-gapped machine, clone
-                  <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-                    >veebch/Bip39-Dice</a
-                  >
-                  and run <code>python3 24thword.py</code> (works for 11- or
-                  23-word prefixes). You’ll get
-                  <span data-dyn="candidates">128</span> candidates — pick one
-                  with dice.
-                </p>
-              </div>
-            </li>
-            <li data-id="c5">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>Verify restore before funding</h4>
-                <p>
-                  Import all <span data-dyn="total-words">12</span> words into an
-                  offline wallet, confirm addresses, wipe, restore again from the
-                  metal/paper backup, then send a small test amount.
-                </p>
-              </div>
-            </li>
-            <li data-id="c6">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>Metal backup + destroy notes</h4>
-                <p>
-                  Stamp words into steel/titanium. Burn working paper (dice
-                  sequences, intermediate sums). Never photograph the seed.
-                </p>
-              </div>
-            </li>
-            <li data-id="c7">
-              <button type="button" class="check" aria-label="Toggle item">✓</button>
-              <div>
-                <h4>If migrating from Mk3</h4>
-                <p>
-                  Read Coinkite’s full migration guidance. Prefer generating the
-                  new seed on an unaffected device (Mk4 / Q / Mk5). A strong
-                  BIP-39 passphrase is an interim option only — not a substitute
-                  for a clean seed when you can migrate.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <div class="grid-2" style="margin-top: 1rem">
-          <div class="card">
-            <h3 style="margin-top: 0">Primary references</h3>
-            <ul style="margin: 0; padding-left: 1.1rem; color: var(--text-muted)">
-              <li>
-                <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-                  >veebch/Bip39-Dice</a
-                >
-                — paper method + <code>24thword.py</code>
-              </li>
-              <li>
-                <a
-                  href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
-                  target="_blank"
-                  rel="noopener"
-                  >Coinkite Mk3 Security Advisory</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://coldcard.com/docs/verifying-dice-roll-math/"
-                  target="_blank"
-                  rel="noopener"
-                  >COLDCARD dice-roll math</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki"
-                  target="_blank"
-                  rel="noopener"
-                  >BIP-39 specification</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3 style="margin-top: 0">Source code</h3>
-            <p style="color: var(--text-muted)">
-              This educational lab is open source. Fork it, audit it, host your
-              own copy.
-            </p>
-            <a
-              class="btn btn-primary"
-              href="https://github.com/adamsimecka/bip39dice"
-              target="_blank"
-              rel="noopener"
-              style="margin-top: 0.5rem"
-              >GitHub: adamsimecka/bip39dice</a
-            >
-          </div>
-        </div>
-
-        <div class="nav-row">
-          <button class="btn btn-secondary" data-go="3">← Back</button>
-          <button class="btn btn-primary" data-go="5">Credits →</button>
-        </div>
+          <button type="button" class="btn-secondary" id="btn-practice-24">
+            Practice a 24-word seed
+          </button>
+        </details>
       </section>
 
-      <!-- PANEL 5: Credits -->
-      <section class="panel" data-panel="5" id="credits" role="tabpanel">
-        <div class="section-head">
-          <h2>Credits &amp; attribution</h2>
-          <p>
-            This site teaches an existing offline method. The hard work — paper
-            calculator, scripts, and documentation — belongs to the people below.
-          </p>
-        </div>
-
-        <div class="card credit-card featured-credit">
-          <div class="credit-badge">Primary method</div>
-          <h3 style="margin: 0.35rem 0 0.5rem">
-            <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-              >veebch / Bip39-Dice</a
-            >
-          </h3>
-          <p style="color: var(--text-muted); margin: 0 0 0.75rem">
-            <strong style="color: var(--text)">Generate a Bitcoin Wallet Seed Phrase using dice</strong>
-            — the offline paper-and-dice workflow this lab visualizes:
-          </p>
-          <ul style="color: var(--text-muted); margin: 0 0 1rem; padding-left: 1.2rem">
-            <li>
-              <a
-                href="https://github.com/veebch/Bip39-Dice/blob/master/BIP39DiceManualCalculator.pdf"
-                target="_blank"
-                rel="noopener"
-                >BIP39DiceManualCalculator.pdf</a
-              >
-              — instructions + word list for the first 23 (or 11) words
-            </li>
-            <li>
-              Odd = 0 / Even = 1 bit mapping and powers-of-two index calculation
-            </li>
-            <li>
-              <a
-                href="https://github.com/veebch/Bip39-Dice/blob/master/24thword.py"
-                target="_blank"
-                rel="noopener"
-                ><code>24thword.py</code></a
-              >
-              — lists valid last-word candidates for an 11- or 23-word prefix
-              (GPL-3.0)
-            </li>
-          </ul>
-          <p style="color: var(--text-muted); margin: 0; font-size: 0.9rem">
-            Repository:
-            <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-              >github.com/veebch/Bip39-Dice</a
-            >
-            · License: <strong style="color: var(--text)">GPL-3.0</strong>
-          </p>
-        </div>
-
-        <div class="grid-2" style="margin-top: 1rem">
-          <div class="card">
-            <h3 style="margin-top: 0">Upstream checksum code</h3>
-            <p style="color: var(--text-muted); margin-bottom: 0">
-              veebch notes that the 24th-word Python logic was taken from
-              <a href="https://github.com/avsync/bip39chk" target="_blank" rel="noopener"
-                >avsync/bip39chk</a
-              >. Our browser implementation follows the same BIP-39 checksum
-              math so practice results match those offline tools.
-            </p>
-          </div>
-          <div class="card">
-            <h3 style="margin-top: 0">BIP-39 standard</h3>
-            <p style="color: var(--text-muted); margin-bottom: 0">
-              Wordlist and mnemonic construction:
-              <a
-                href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki"
-                target="_blank"
-                rel="noopener"
-                >BIP-0039</a
-              >
-              ·
-              <a
-                href="https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt"
-                target="_blank"
-                rel="noopener"
-                >english.txt</a
-              >
-            </p>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top: 1rem">
-          <h3 style="margin-top: 0">This website (bip39dice.com)</h3>
-          <p style="color: var(--text-muted)">
-            Interactive UI and client-side practice lab — open source, independent
-            project. Not affiliated with Coinkite, COLDCARD, or veebch. Source:
-            <a href="https://github.com/adamsimecka/bip39dice" target="_blank" rel="noopener"
-              >github.com/adamsimecka/bip39dice</a
-            >.
-          </p>
-          <p style="color: var(--text-muted); margin-bottom: 0; font-size: 0.9rem">
-            If you use this site, please also star and support
-            <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-              >veebch/Bip39-Dice</a
-            >
-            — that’s the tool you should use offline when real funds are at stake.
-          </p>
-        </div>
-
-        <div class="nav-row">
-          <button class="btn btn-secondary" data-go="4">← Back</button>
-          <a class="btn btn-primary" href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-            >Open veebch/Bip39-Dice ↗</a
+      <!-- Real world -->
+      <section class="block card">
+        <h2>3. For real money — go offline</h2>
+        <p class="sub">
+          Never trust a website (including this one) with a seed you’ll fund.
+          Use paper, real dice, and an offline computer.
+        </p>
+        <ul class="checklist-lite">
+          <li>Print the offline guide (PDF)</li>
+          <li>Roll physical dice for words 1–11</li>
+          <li>Run the offline script for word 12</li>
+          <li>Write the 12 words on metal or paper — never a photo</li>
+        </ul>
+        <a
+          class="btn-big btn-outline"
+          href="https://github.com/veebch/Bip39-Dice"
+          target="_blank"
+          rel="noopener"
+        >
+          Offline tools: veebch/Bip39-Dice ↗
+        </a>
+        <p class="credit-line">
+          Method by
+          <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
+            >veebch</a
           >
-        </div>
+          — paper calculator + <code>24thword.py</code>. This site is just a
+          simple demo of that work.
+        </p>
       </section>
+
+      <p class="footnote">
+        <a href="https://github.com/adamsimecka/bip39dice" target="_blank" rel="noopener"
+          >Source on GitHub</a
+        >
+        · Not affiliated with Coinkite / COLDCARD ·
+        <a
+          href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
+          target="_blank"
+          rel="noopener"
+          >Why dice matter (Mk3 advisory)</a
+        >
+      </p>
     </main>
 
-    <footer class="site-footer">
-      <p>
-        <strong style="color: var(--text-muted)">bip39dice.com</strong>
-        — educational demo of the method in
-        <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-          >veebch/Bip39-Dice</a
-        >
-        (GPL-3.0). Site source:
-        <a href="https://github.com/adamsimecka/bip39dice" target="_blank" rel="noopener"
-          >adamsimecka/bip39dice</a
-        >. Not affiliated with Coinkite / COLDCARD.
-      </p>
-      <p>
-        Practice seeds created here are insecure by design (browser environment).
-        No seed material is sent to any server — all crypto runs locally in your
-        browser.
-      </p>
-    </footer>
-
     <div class="live" id="live" aria-live="polite"></div>
-
     <script type="module" src="app.js"></script>
   </body>
 </html>
