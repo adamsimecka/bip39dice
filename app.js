@@ -52,47 +52,83 @@ function recomputeAnswer() {
 }
 
 function goTo(n) {
-  step = Math.max(0, Math.min(TOTAL_STEPS - 1, n));
-  $$('.step').forEach((el) => {
-    const s = Number(el.dataset.step);
-    const on = s === step;
-    el.hidden = !on;
-    el.classList.toggle('active', on);
-  });
+  try {
+    step = Math.max(0, Math.min(TOTAL_STEPS - 1, Number(n) || 0));
+    $$('.step').forEach((el) => {
+      const s = Number(el.dataset.step);
+      const on = s === step;
+      if (on) {
+        el.removeAttribute('hidden');
+        el.hidden = false;
+        el.classList.add('active');
+      } else {
+        el.setAttribute('hidden', '');
+        el.hidden = true;
+        el.classList.remove('active');
+      }
+    });
 
-  if (step === 0) {
-    progressWrap.hidden = true;
-  } else {
-    progressWrap.hidden = false;
-    progressFill.style.width = `${(step / (TOTAL_STEPS - 1)) * 100}%`;
-    progressLabel.textContent = `${step} / ${TOTAL_STEPS - 1}`;
+    if (progressWrap) {
+      if (step === 0) {
+        progressWrap.hidden = true;
+        progressWrap.setAttribute('hidden', '');
+      } else {
+        progressWrap.hidden = false;
+        progressWrap.removeAttribute('hidden');
+        if (progressFill) progressFill.style.width = `${(step / (TOTAL_STEPS - 1)) * 100}%`;
+        if (progressLabel) progressLabel.textContent = `${step} / ${TOTAL_STEPS - 1}`;
+      }
+    }
+
+    if (step === 1) renderSeedPreview();
+    if (step === 3) animatePipeline();
+    if (step === 4) resetLab();
+    if (step === 5) animateSeedSlots();
+    if (step === 6 && !practicedOnce) {
+      const box = $('#practice-box');
+      const nav = $('#practice-nav');
+      const hint = $('#practice-hint');
+      if (box) box.hidden = true;
+      if (nav) nav.hidden = true;
+      if (hint) hint.hidden = false;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (live) live.textContent = `Step ${step}`;
+  } catch (err) {
+    console.error('goTo failed', err);
   }
-
-  if (step === 1) renderSeedPreview();
-  if (step === 3) animatePipeline();
-  if (step === 4) resetLab();
-  if (step === 5) animateSeedSlots();
-  if (step === 6 && !practicedOnce) {
-    $('#practice-box').hidden = true;
-    $('#practice-nav').hidden = true;
-    $('#practice-hint').hidden = false;
-  }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  live.textContent = `Step ${step}`;
 }
 
+/** Direct bindings — more reliable than only document delegation */
+function bindTutorialNav() {
+  $$('[data-next]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      goTo(step + 1);
+    });
+  });
+  $$('[data-back]').forEach((btn) => {
+    // Lab back is #lab-back without data-back
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      goTo(step - 1);
+    });
+  });
+}
+
+// Also catch late/dynamic clicks
 document.addEventListener('click', (e) => {
-  // Lab uses its own #lab-next / #lab-back handlers
   if (e.target.closest('#lab-next') || e.target.closest('#lab-back')) return;
-  if (e.target.closest('[data-next]')) goTo(step + 1);
-  if (e.target.closest('[data-back]')) goTo(step - 1);
+  const next = e.target.closest('[data-next]');
+  const back = e.target.closest('[data-back]');
+  // Direct listeners already fire; skip if defaultPrevented
+  if (e.defaultPrevented) return;
+  if (next) goTo(step + 1);
+  if (back) goTo(step - 1);
 });
 
-// Allow data-next/back outside lab except when in step 4 nav handled separately
-// Actually step 1-3 still use data-next - the #step-4 return blocks ALL clicks inside step-4 including... wait, clicks on data-next outside step-4 are fine.
-// Clicks inside step-4 that aren't lab-next: mode buttons etc. shouldn't trigger global next. Good.
-// But wait - document handler returns early for entire #step-4, so data-next inside step-4 wouldn't work - we only have lab-next. Good.
+window.goToStep = goTo;
 
 $('#btn-restart')?.addEventListener('click', () => {
   practicedOnce = false;
@@ -620,8 +656,31 @@ $('#btn-gen-again')?.addEventListener('click', () => generatePractice(12));
 // Re-enable data-next for non-lab: the early return for #step-4 prevents bubbling from lab only when target is inside step-4. Clicks on step 0 Start work.
 
 // ——— Init ———
-renderDieTray();
-updateRollProgress();
-goTo(0);
+function init() {
+  try {
+    bindTutorialNav();
+    renderDieTray();
+    updateRollProgress();
+    goTo(0);
+    if (WORDLIST.length !== 2048) console.error('Wordlist incomplete');
+  } catch (err) {
+    console.error('bip39dice init failed', err);
+    // Last resort: make Start still advance via inline-friendly API
+    document.querySelectorAll('[data-next]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const steps = [...document.querySelectorAll('.step')];
+        const i = steps.findIndex((s) => !s.hidden);
+        if (i >= 0 && i < steps.length - 1) {
+          steps[i].hidden = true;
+          steps[i + 1].hidden = false;
+        }
+      });
+    });
+  }
+}
 
-if (WORDLIST.length !== 2048) console.error('Wordlist incomplete');
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
