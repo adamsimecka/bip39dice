@@ -87,7 +87,9 @@
       <!-- ===== STEP 2: What you'll need ===== -->
       <section class="step" data-step="2" id="step-2" hidden>
         <h1>What you’ll need</h1>
-        <p class="lede">For a real seed later. This tutorial only needs a screen.</p>
+        <p class="lede">
+          Practical path: dice + a Coldcard. No spare offline PC required.
+        </p>
         <div class="needs-grid" aria-hidden="true">
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
@@ -106,13 +108,12 @@
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
               <svg viewBox="0 0 64 64" fill="none">
-                <path d="M16 10h28l8 8v36a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z" stroke="currentColor" stroke-width="3"/>
-                <path d="M44 10v10h10" stroke="currentColor" stroke-width="3"/>
-                <path d="M20 30h24M20 40h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <rect x="14" y="10" width="36" height="44" rx="4" stroke="currentColor" stroke-width="3"/>
+                <path d="M22 22h20M22 32h20M22 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
               </svg>
             </div>
-            <strong>Word list</strong>
-            <span>BIP-39 list (printed)</span>
+            <strong>Coldcard</strong>
+            <span>Mk3 can do this on-device</span>
           </div>
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
@@ -122,21 +123,24 @@
               </svg>
             </div>
             <strong>Pen &amp; paper</strong>
-            <span>Write words down</span>
+            <span>Write the backup words</span>
           </div>
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
               <svg viewBox="0 0 64 64" fill="none">
-                <rect x="10" y="14" width="44" height="32" rx="4" stroke="currentColor" stroke-width="3"/>
-                <path d="M10 42h44v4a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4v-4z" stroke="currentColor" stroke-width="3"/>
-                <path d="M28 50h8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                <circle cx="44" cy="22" r="2" fill="#3dd68c"/>
+                <path d="M16 10h28l8 8v36a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z" stroke="currentColor" stroke-width="3"/>
+                <path d="M44 10v10h10" stroke="currentColor" stroke-width="3"/>
+                <path d="M20 30h24M20 40h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
               </svg>
             </div>
-            <strong>Offline computer</strong>
-            <span>Only for word 12</span>
+            <strong>Patience</strong>
+            <span>~50–99 rolls (don’t rush)</span>
           </div>
         </div>
+        <p class="lede tight">
+          This site teaches the idea. For a real Mk3 wallet you’ll enter rolls
+          <em>on the Coldcard</em> — it builds the seed (including word 12).
+        </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
           <button type="button" class="btn-primary" data-next>How one word is made</button>
@@ -255,8 +259,8 @@
           </div>
         </div>
         <p class="lede tight">
-          Repeat the dice method eleven times on paper. Word 12 needs an offline
-          tool (veebch’s <code>24thword.py</code>).
+          On a Coldcard you don’t hand-pick each word: you type many dice rolls
+          (1–6) and the device turns them into all 12 (or 24) words for you.
         </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
@@ -288,43 +292,67 @@
         <div class="visual" aria-hidden="true">
           <div class="offline-icons">
             <div class="off-item">
-              <div class="off-emoji">📄</div>
-              <span>Paper</span>
-            </div>
-            <div class="off-plus">+</div>
-            <div class="off-item">
               <div class="off-emoji">🎲</div>
-              <span>Real dice</span>
+              <span>Dice</span>
             </div>
             <div class="off-plus">+</div>
             <div class="off-item">
-              <div class="off-emoji">💻</div>
-              <span>Offline PC</span>
+              <div class="off-emoji">❄️</div>
+              <span>Coldcard</span>
+            </div>
+            <div class="off-plus">+</div>
+            <div class="off-item">
+              <div class="off-emoji">📝</div>
+              <span>Backup</span>
             </div>
           </div>
         </div>
-        <h1>For real money: go offline</h1>
+        <h1>Yes — this works on Mk3</h1>
         <p class="lede">
-          Never trust a website (including this one) with a seed you’ll fund.
+          Coinkite’s Mk3 advisory specifically allows a
+          <strong>dice-only</strong> seed so you don’t use the device RNG.
+          No second computer required to create the seed.
         </p>
         <ol class="real-steps">
-          <li>Print the free offline guide (PDF)</li>
-          <li>Roll physical dice for words 1–11</li>
-          <li>Run the offline script for word 12</li>
-          <li>Store on metal or paper — never a photo</li>
+          <li>
+            On an empty Mk3: use the
+            <strong>dice rolls</strong> seed path (not “new wallet” random)
+          </li>
+          <li>
+            Enter at least <strong>50 rolls</strong> for 12 words, or
+            <strong>99</strong> for 24 words (Coinkite’s minimums)
+          </li>
+          <li>Write the words the Coldcard shows — verify the backup</li>
+          <li>Test a small receive before moving everything</li>
         </ol>
+        <p class="lede tight">
+          Never type real rolls or a funded seed into this website. The Coldcard
+          is the computer.
+        </p>
         <a
           class="btn-primary link-btn"
-          href="https://github.com/veebch/Bip39-Dice"
+          href="https://coldcard.com/docs/verifying-dice-roll-math/"
           target="_blank"
           rel="noopener"
         >
-          Open veebch/Bip39-Dice ↗
+          Coldcard dice-roll docs ↗
+        </a>
+        <a
+          class="btn-ghost full link-btn"
+          href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
+          target="_blank"
+          rel="noopener"
+          style="display: block; text-align: center; margin-bottom: 1rem"
+        >
+          Mk3 security advisory ↗
         </a>
         <p class="credit">
-          Method by
-          <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener">veebch</a>
-          (paper calculator + <code>24thword.py</code>). This site is a demo of that work.
+          Paper-only method (no hardware wallet):
+          <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
+            >veebch/Bip39-Dice</a
+          >
+          — that path needs an air-gapped machine for the last word. Optional, not
+          required if you use Coldcard dice entry.
         </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
