@@ -149,183 +149,129 @@
         </div>
       </section>
 
-      <!-- ===== STEP 3: Pipeline overview ===== -->
+      <!-- ===== STEP 3: What you're about to do ===== -->
       <section class="step" data-step="3" id="step-3" hidden>
-        <div class="visual" aria-hidden="true">
-          <div class="pipeline" id="pipeline">
-            <div class="pipe-node" data-pipe="0">
-              <div class="pipe-icon">🎲</div>
-              <span>Roll</span>
-            </div>
-            <div class="pipe-arrow">→</div>
-            <div class="pipe-node" data-pipe="1">
-              <div class="pipe-icon">01</div>
-              <span>Bits</span>
-            </div>
-            <div class="pipe-arrow">→</div>
-            <div class="pipe-node" data-pipe="2">
-              <div class="pipe-icon">#</div>
-              <span>Number</span>
-            </div>
-            <div class="pipe-arrow">→</div>
-            <div class="pipe-node" data-pipe="3">
-              <div class="pipe-icon">Aa</div>
-              <span>List</span>
-            </div>
-          </div>
-        </div>
-        <h1>One word, four steps</h1>
-        <ol class="recipe">
-          <li><strong>Roll</strong> a die 11 times (one die is enough)</li>
-          <li><strong>You</strong> mark each roll odd→0 or even→1</li>
-          <li><strong>You</strong> add powers of two → a number 0–2047</li>
-          <li><strong>You</strong> find that number on the BIP-39 list</li>
+        <h1>How one seed word is made</h1>
+        <p class="lede">Think of a paper worksheet with 11 rows. You’ll fill it in order:</p>
+        <ol class="recipe big-recipe">
+          <li>
+            <strong>Roll</strong>
+            <span>One die, eleven times (or eleven dice once)</span>
+          </li>
+          <li>
+            <strong>Odd or even?</strong>
+            <span>Odd = 0 · Even = 1</span>
+          </li>
+          <li>
+            <strong>Add</strong>
+            <span>Only the “1” rows, using powers of two</span>
+          </li>
+          <li>
+            <strong>Look up</strong>
+            <span>That total on the BIP-39 word list</span>
+          </li>
         </ol>
-        <p class="lede tight">Next you’ll do every step yourself — we won’t skip ahead for you.</p>
+        <p class="lede tight">On the next screen you’ll use a live worksheet. One row at a time.</p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
-          <button type="button" class="btn-primary" data-next>I’ll do it myself</button>
+          <button type="button" class="btn-primary" data-next>Open the worksheet</button>
         </div>
       </section>
 
-      <!-- ===== STEP 4: Interactive lab ===== -->
+      <!-- ===== STEP 4: Single worksheet lab ===== -->
       <section class="step" data-step="4" id="step-4" hidden>
-        <p class="step-kicker" id="lab-kicker">Part 1 of 4</p>
-        <h1 id="lab-title">Get 11 rolls</h1>
-        <p class="lede" id="lab-lede">
-          One die is fine — roll it eleven times. Or enter faces from a real die.
-        </p>
-
-        <!-- Phase A: fill rolls one at a time -->
-        <div id="lab-phase-a">
-          <div class="mode-row" role="group" aria-label="How to enter rolls">
-            <button type="button" class="mode-btn active" data-roll-mode="sim">Simulate roll</button>
-            <button type="button" class="mode-btn" data-roll-mode="phys">I have a real die</button>
+        <div class="ws-header">
+          <div>
+            <p class="step-kicker" id="lab-kicker">Row 1 of 11</p>
+            <h1 id="lab-title">Roll the die</h1>
           </div>
+          <button type="button" class="btn-ghost mini" id="btn-reset-sheet">Reset</button>
+        </div>
+        <p class="lede" id="lab-lede">Get a number 1–6 for this row.</p>
 
-          <p class="roll-progress" id="roll-progress">0 of 11 rolls</p>
-          <div class="die-tray" id="die-tray"></div>
+        <!-- Always-visible worksheet -->
+        <div class="worksheet" id="worksheet" aria-label="Dice worksheet"></div>
 
-          <div id="sim-controls">
-            <button type="button" class="btn-primary" id="btn-roll-one">Roll next die</button>
-          </div>
-          <div id="phys-controls" hidden>
-            <p class="phase-note">Tap the face you rolled:</p>
-            <div class="face-pad" id="face-pad">
-              <button type="button" data-face="1">1</button>
-              <button type="button" data-face="2">2</button>
-              <button type="button" data-face="3">3</button>
-              <button type="button" data-face="4">4</button>
-              <button type="button" data-face="5">5</button>
-              <button type="button" data-face="6">6</button>
-            </div>
-          </div>
-          <button type="button" class="btn-ghost full" id="btn-clear-rolls" hidden>Clear all rolls</button>
+        <!-- Context-sensitive action panel -->
+        <div class="ws-action" id="ws-action">
+          <!-- filled by JS -->
         </div>
 
-        <!-- Phase B: user maps each die to bit -->
-        <div id="lab-phase-b" hidden>
-          <div class="quiz-card" id="bit-quiz">
-            <p class="quiz-count" id="bit-quiz-count">Die 1 of 11</p>
-            <div class="quiz-die" id="bit-quiz-die">?</div>
-            <p class="phase-note">Is this odd or even?</p>
-            <div class="quiz-actions">
-              <button type="button" class="quiz-btn" id="btn-odd" data-bit="0">
-                Odd → <strong>0</strong>
-              </button>
-              <button type="button" class="quiz-btn" id="btn-even" data-bit="1">
-                Even → <strong>1</strong>
-              </button>
-            </div>
-            <p class="quiz-feedback" id="bit-feedback" hidden></p>
-          </div>
-          <div class="bit-strip" id="bit-strip" aria-label="Bits so far"></div>
-        </div>
+        <p class="quiz-feedback" id="ws-feedback" hidden></p>
 
-        <!-- Phase C: user computes the number -->
-        <div id="lab-phase-c" hidden>
-          <div class="calc-card">
-            <div class="calc-rows" id="calc-rows"></div>
-            <div class="calc-total">
-              <span>Running total</span>
-              <strong id="calc-running">0</strong>
-            </div>
-          </div>
-          <p class="phase-note">Add every row where the bit is 1. Enter the final total:</p>
-          <form class="answer-form" id="sum-form">
-            <input
-              type="number"
-              id="sum-input"
-              min="0"
-              max="2047"
-              inputmode="numeric"
-              placeholder="0–2047"
-              autocomplete="off"
-              required
-            />
-            <button type="submit" class="btn-primary">Check my total</button>
-          </form>
-          <p class="quiz-feedback" id="sum-feedback" hidden></p>
-        </div>
-
-        <!-- Phase D: user finds word on full list -->
-        <div id="lab-phase-d" hidden>
+        <!-- Word list (shown only when looking up) -->
+        <div id="ws-list-panel" hidden>
           <div class="find-banner">
-            Find index <strong id="find-index">—</strong> on the list and tap it
+            Your number is <strong id="find-index">—</strong> — find it and tap the word
           </div>
           <div class="list-chrome tall">
             <div class="list-chrome-top">
-              <span>BIP-39 English (2,048 words)</span>
+              <span>BIP-39 English · 2,048 words</span>
             </div>
             <div class="list-tools">
               <input
                 type="search"
                 id="list-search"
-                placeholder="Search number or word…"
+                placeholder="Type the number, e.g. 563"
                 autocomplete="off"
                 spellcheck="false"
               />
             </div>
             <div class="wordlist full" id="wordlist" role="list"></div>
           </div>
-          <p class="quiz-feedback" id="list-feedback" hidden></p>
-          <div class="word-found" id="word-found" hidden>
-            <p class="word-found-label">You found</p>
-            <p class="word-found-text" id="word-found-text">—</p>
-            <p class="word-found-meta" id="word-found-meta"></p>
-          </div>
+        </div>
+
+        <div class="word-found" id="word-found" hidden>
+          <p class="word-found-label">Seed word</p>
+          <p class="word-found-text" id="word-found-text">—</p>
+          <p class="word-found-meta" id="word-found-meta"></p>
         </div>
 
         <div class="nav-row" id="lab-nav" hidden>
           <button type="button" class="btn-ghost" id="lab-back">Back</button>
-          <button type="button" class="btn-primary" id="lab-next">Continue</button>
+          <button type="button" class="btn-primary" id="lab-next">What about 12 words?</button>
         </div>
-        <p class="hint-wait" id="lab-hint">Fill all 11 rolls to continue</p>
       </section>
 
-      <!-- ===== STEP 5: Full seed structure ===== -->
+      <!-- ===== STEP 5: Full seed — clear bridge ===== -->
       <section class="step" data-step="5" id="step-5" hidden>
-        <div class="visual" aria-hidden="true">
-          <div class="seed-slots" id="seed-slots"></div>
-        </div>
-        <h1>A full seed is 12 words</h1>
+        <h1>You made <em id="made-word">one</em> word</h1>
+        <p class="lede">A Bitcoin seed needs <strong>12 words</strong>. Here’s how they fit:</p>
+
+        <div class="seed-slots" id="seed-slots" aria-hidden="true"></div>
+
         <div class="two-facts">
           <div class="fact">
             <span class="fact-n">1–11</span>
-            <span class="fact-t">Made with dice (like you just did)</span>
+            <span class="fact-t"
+              >Each one is made the way you just practiced (11 rolls → number → list)</span
+            >
           </div>
           <div class="fact fact-special">
             <span class="fact-n">12</span>
-            <span class="fact-t">Checksum — calculated from the first 11</span>
+            <span class="fact-t"
+              >Not free choice — it’s a checksum derived from words 1–11</span
+            >
           </div>
         </div>
-        <p class="lede tight">
-          On a Coldcard you don’t hand-pick each word: you type many dice rolls
-          (1–6) and the device turns them into all 12 (or 24) words for you.
-        </p>
+
+        <div class="path-cards">
+          <div class="path-card">
+            <h3>Paper method</h3>
+            <p>Repeat the worksheet 11 times, then use an offline tool for word 12.</p>
+          </div>
+          <div class="path-card featured">
+            <h3>Coldcard (easier)</h3>
+            <p>
+              Enter many dice rolls (1–6) on the device. It builds all 12 words for you —
+              including word 12. No separate computer.
+            </p>
+          </div>
+        </div>
+
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
-          <button type="button" class="btn-primary" data-next>Practice a full seed</button>
+          <button type="button" class="btn-primary" data-next>See a full practice seed</button>
         </div>
       </section>
 

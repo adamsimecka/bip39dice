@@ -1258,6 +1258,232 @@ a:hover {
   line-height: 1.5;
 }
 
+/* Worksheet */
+.ws-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.ws-header h1 {
+  margin-bottom: 0.35rem;
+}
+
+.btn-ghost.mini {
+  padding: 0.4rem 0.65rem;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.worksheet {
+  background: var(--cream);
+  border: 2.5px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  margin: 0.85rem 0 1rem;
+  font-size: 0.78rem;
+  overflow: hidden;
+}
+
+.ws-row {
+  display: grid;
+  grid-template-columns: 1.6rem 2.2rem 2.6rem 1.8rem 2.8rem 1fr;
+  gap: 0.15rem;
+  align-items: center;
+  padding: 0.38rem 0.45rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.ws-row:last-child {
+  border-bottom: none;
+}
+
+.ws-head {
+  background: var(--paper-deep);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink);
+}
+
+.ws-row.active {
+  background: rgba(194, 59, 34, 0.1);
+  color: var(--ink);
+  box-shadow: inset 3px 0 0 var(--brick);
+}
+
+.ws-row.done {
+  color: var(--ink);
+}
+
+.ws-n {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.ws-face {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.ws-bit.one {
+  color: var(--brick);
+  font-weight: 800;
+}
+
+.ws-bit.zero {
+  color: var(--muted);
+}
+
+.ws-add {
+  font-weight: 700;
+  text-align: right;
+}
+
+.ws-add.total {
+  color: var(--brick);
+  font-size: 1.05rem;
+}
+
+.ws-foot {
+  background: var(--paper-deep);
+  border-top: 2px solid var(--ink);
+  font-weight: 700;
+}
+
+.ws-action {
+  margin-bottom: 0.75rem;
+}
+
+.quiz-card.compact {
+  margin-bottom: 0;
+  padding: 1rem 0.85rem;
+}
+
+.quiz-card.compact .quiz-die {
+  width: 72px;
+  height: 72px;
+  font-size: 2rem;
+}
+
+.sum-hint {
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  padding: 0.85rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.sum-hint p {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.sum-chips {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 !important;
+}
+
+.chip {
+  display: inline-block;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  background: rgba(194, 59, 34, 0.1);
+  border: 1.5px solid var(--brick);
+  color: var(--brick);
+}
+
+.big-recipe li {
+  margin-bottom: 0.75rem;
+}
+
+.big-recipe strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 0.15rem;
+}
+
+.big-recipe span {
+  display: block;
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.path-cards {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0 0 1.15rem;
+}
+
+.path-card {
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  padding: 0.9rem 1rem;
+  box-shadow: 2px 2px 0 rgba(28, 25, 21, 0.1);
+}
+
+.path-card.featured {
+  border-color: var(--felt);
+  box-shadow: 3px 3px 0 var(--felt);
+}
+
+.path-card h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--display);
+  font-size: 1.05rem;
+}
+
+.path-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.seed-slots .ss.yours {
+  border-color: var(--brick);
+  background: rgba(194, 59, 34, 0.1);
+  color: var(--brick);
+}
+
+.seed-slots .ss-w {
+  font-family: var(--display);
+  font-size: 0.65rem;
+  text-transform: none;
+  letter-spacing: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.15rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 /* Seed slots */
 .seed-slots {
   display: grid;

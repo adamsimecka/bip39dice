@@ -16,10 +16,6 @@ let practicedOnce = false;
 let faces = Array(11).fill(null);
 /** @type {(number|null)[]} user-entered bits in quiz */
 let userBits = Array(11).fill(null);
-let bitQuizIndex = 0;
-let rollMode = 'sim'; // sim | phys
-/** labPhase: 0 rolls · 1 bits quiz · 2 sum · 3 list pick · 4 done */
-let labPhase = 0;
 let correctIndex = null;
 let correctWord = null;
 
@@ -81,7 +77,6 @@ function goTo(n) {
     }
 
     if (step === 1) renderSeedPreview();
-    if (step === 3) animatePipeline();
     if (step === 4) resetLab();
     if (step === 5) animateSeedSlots();
     if (step === 6 && !practicedOnce) {
@@ -165,354 +160,326 @@ function renderSeedPreview() {
   el.dataset.ready = '1';
 }
 
-// ——— Step 3 ———
-async function animatePipeline() {
-  const nodes = $$('[data-pipe]');
-  nodes.forEach((n) => n.classList.remove('on'));
-  for (let i = 0; i < nodes.length; i++) {
-    await sleep(280);
-    nodes[i].classList.add('on');
-  }
-}
+// ——— Step 4: single worksheet ———
+// Row loop: need-roll → need-bit → next row → sum → word → done
+let rollMode = 'sim';
+let sheetStage = 'row'; // row | sum | word | done
+let activeRow = 0;
+let sumChecked = false;
 
-// ——— Lab ———
-const LAB_META = [
-  {
-    kicker: 'Part 1 of 4',
-    title: 'Get 11 rolls',
-    lede: 'One die is enough — roll it eleven times. Or enter faces from a real die.',
-  },
-  {
-    kicker: 'Part 2 of 4',
-    title: 'Mark odd or even',
-    lede: 'You decide for each roll. Odd → 0. Even → 1. (Wrong answers won’t pass.)',
-  },
-  {
-    kicker: 'Part 3 of 4',
-    title: 'Add it up',
-    lede: 'Where the bit is 1, add that power of two. Type the total yourself.',
-  },
-  {
-    kicker: 'Part 4 of 4',
-    title: 'Find your word',
-    lede: 'Use the full BIP-39 list below. Search or scroll — tap the correct word.',
-  },
-  {
-    kicker: 'Done',
-    title: 'You made a seed word',
-    lede: 'That’s the same process you’d do on paper. Never fund a word from a website.',
-  },
-];
-
-function setLabCopy(phase) {
-  const m = LAB_META[Math.min(phase, 4)];
-  $('#lab-kicker').textContent = m.kicker;
-  $('#lab-title').textContent = m.title;
-  $('#lab-lede').textContent = m.lede;
-}
-
-function showPhase(phase) {
-  labPhase = phase;
-  setLabCopy(phase);
-  $('#lab-phase-a').hidden = phase !== 0;
-  $('#lab-phase-b').hidden = phase !== 1;
-  $('#lab-phase-c').hidden = phase !== 2;
-  $('#lab-phase-d').hidden = phase !== 3 && phase !== 4;
-  // When done, keep list visible under success
-  if (phase === 4) {
-    $('#lab-phase-d').hidden = false;
-  }
-
-  const nav = $('#lab-nav');
-  const hint = $('#lab-hint');
-  const next = $('#lab-next');
-
-  if (phase === 0) {
-    nav.hidden = !allFilled();
-    next.textContent = 'Next: mark odd / even';
-    hint.hidden = allFilled();
-    hint.textContent = 'Fill all 11 rolls to continue';
-  } else if (phase === 1) {
-    nav.hidden = true;
-    hint.hidden = true;
-  } else if (phase === 2) {
-    nav.hidden = true;
-    hint.hidden = true;
-  } else if (phase === 3) {
-    nav.hidden = true;
-    hint.hidden = true;
-  } else if (phase === 4) {
-    nav.hidden = false;
-    next.textContent = 'See the full seed';
-    hint.hidden = true;
-  }
+function bitsComplete() {
+  return userBits.every((b) => b === 0 || b === 1) && faces.every((f) => f != null);
 }
 
 function resetLab() {
   faces = Array(11).fill(null);
   userBits = Array(11).fill(null);
-  bitQuizIndex = 0;
   correctIndex = null;
   correctWord = null;
   rollMode = 'sim';
-  $$('.mode-btn').forEach((b) => b.classList.toggle('active', b.dataset.rollMode === 'sim'));
-  $('#sim-controls').hidden = false;
-  $('#phys-controls').hidden = true;
-  $('#sum-input').value = '';
-  $('#sum-feedback').hidden = true;
-  $('#list-feedback').hidden = true;
-  $('#bit-feedback').hidden = true;
-  $('#word-found').hidden = true;
-  $('#list-search').value = '';
-  renderDieTray();
-  updateRollProgress();
-  showPhase(0);
+  sheetStage = 'row';
+  activeRow = 0;
+  sumChecked = false;
+  const fb = $('#ws-feedback');
+  if (fb) {
+    fb.hidden = true;
+    fb.textContent = '';
+  }
+  const list = $('#ws-list-panel');
+  if (list) list.hidden = true;
+  const found = $('#word-found');
+  if (found) found.hidden = true;
+  const nav = $('#lab-nav');
+  if (nav) nav.hidden = true;
+  const search = $('#list-search');
+  if (search) search.value = '';
+  renderWorksheet();
+  renderActionPanel();
+  updateLabChrome();
 }
 
-function renderDieTray() {
-  const tray = $('#die-tray');
-  tray.innerHTML = faces
+function updateLabChrome() {
+  const kicker = $('#lab-kicker');
+  const title = $('#lab-title');
+  const lede = $('#lab-lede');
+  if (sheetStage === 'row') {
+    if (kicker) kicker.textContent = `Row ${Math.min(activeRow + 1, 11)} of 11`;
+    if (faces[activeRow] == null) {
+      if (title) title.textContent = 'Roll the die';
+      if (lede) lede.textContent = 'One die is enough. Roll it (or tap 1–6 from a real die).';
+    } else if (userBits[activeRow] == null) {
+      if (title) title.textContent = 'Odd or even?';
+      if (lede)
+        lede.textContent = `You rolled ${faces[activeRow]}. Odd → 0 · Even → 1. Pick the correct one.`;
+    }
+  } else if (sheetStage === 'sum') {
+    if (kicker) kicker.textContent = 'Almost there';
+    if (title) title.textContent = 'Add the “1” rows';
+    if (lede)
+      lede.textContent =
+        'Each row with bit 1 adds its power of two. Sum them (0–2047), then enter the total.';
+  } else if (sheetStage === 'word') {
+    if (kicker) kicker.textContent = 'Last step';
+    if (title) title.textContent = 'Find your word';
+    if (lede)
+      lede.textContent = `Look up number ${correctIndex} on the BIP-39 list and tap that word.`;
+  } else if (sheetStage === 'done') {
+    if (kicker) kicker.textContent = 'Done';
+    if (title) title.textContent = 'You made a seed word';
+    if (lede)
+      lede.textContent = 'Same process as paper. Never use a website for a funded seed.';
+  }
+}
+
+function renderWorksheet() {
+  const el = $('#worksheet');
+  if (!el) return;
+  const head = `
+    <div class="ws-row ws-head">
+      <span>#</span><span>Roll</span><span>O/E</span><span>Bit</span><span>Power</span><span>Add</span>
+    </div>`;
+  const rows = faces
     .map((face, i) => {
-      const empty = face == null;
-      const current = empty && faces.findIndex((f) => f == null) === i;
-      return `<button type="button" class="die ${empty ? 'empty' : 'locked'} ${
-        current ? 'current' : ''
-      }" data-i="${i}" aria-label="Roll ${i + 1}${face != null ? `: ${face}` : ''}">${
-        face ?? i + 1
-      }</button>`;
+      const bit = userBits[i];
+      const power = POWERS[i];
+      const add = bit === 1 ? power : bit === 0 ? 0 : '—';
+      const oe =
+        face == null ? '—' : bit == null ? '?' : face % 2 === 0 ? 'even' : 'odd';
+      const isActive = sheetStage === 'row' && i === activeRow;
+      const isDone = face != null && bit != null;
+      return `<div class="ws-row ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}" data-row="${i}">
+        <span class="ws-n">${i + 1}</span>
+        <span class="ws-face">${face ?? '·'}</span>
+        <span class="ws-oe">${oe}</span>
+        <span class="ws-bit ${bit === 1 ? 'one' : bit === 0 ? 'zero' : ''}">${
+          bit == null ? '·' : bit
+        }</span>
+        <span class="ws-pow">${power}</span>
+        <span class="ws-add">${add}</span>
+      </div>`;
     })
     .join('');
 
-  $$('.die', tray).forEach((btn) => {
+  let foot = '';
+  if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
+    foot = `<div class="ws-row ws-foot">
+      <span></span><span></span><span></span><span></span>
+      <span class="ws-pow">Total</span>
+      <span class="ws-add total" id="ws-total-display">${
+        sumChecked ? correctIndex : '?'
+      }</span>
+    </div>`;
+  }
+  el.innerHTML = head + rows + foot;
+}
+
+function renderActionPanel() {
+  const panel = $('#ws-action');
+  if (!panel) return;
+  const fb = $('#ws-feedback');
+  if (fb) fb.hidden = true;
+
+  if (sheetStage === 'row') {
+    const face = faces[activeRow];
+    if (face == null) {
+      // Need a roll
+      panel.innerHTML = `
+        <div class="mode-row" role="group">
+          <button type="button" class="mode-btn ${
+            rollMode === 'sim' ? 'active' : ''
+          }" data-roll-mode="sim">Simulate</button>
+          <button type="button" class="mode-btn ${
+            rollMode === 'phys' ? 'active' : ''
+          }" data-roll-mode="phys">Real die</button>
+        </div>
+        <div id="sim-controls" ${rollMode === 'phys' ? 'hidden' : ''}>
+          <button type="button" class="btn-primary" id="btn-roll-one">Roll for row ${
+            activeRow + 1
+          }</button>
+        </div>
+        <div id="phys-controls" ${rollMode === 'sim' ? 'hidden' : ''}>
+          <p class="phase-note">What did your die show?</p>
+          <div class="face-pad" id="face-pad">
+            ${[1, 2, 3, 4, 5, 6]
+              .map((n) => `<button type="button" data-face="${n}">${n}</button>`)
+              .join('')}
+          </div>
+        </div>`;
+      wireRollControls();
+    } else {
+      // Need odd/even
+      panel.innerHTML = `
+        <div class="quiz-card compact">
+          <div class="quiz-die" id="bit-quiz-die">${face}</div>
+          <p class="phase-note">Is ${face} odd or even?</p>
+          <div class="quiz-actions">
+            <button type="button" class="quiz-btn" id="btn-odd">Odd → <strong>0</strong></button>
+            <button type="button" class="quiz-btn" id="btn-even">Even → <strong>1</strong></button>
+          </div>
+        </div>`;
+      $('#btn-odd')?.addEventListener('click', () => answerBit(0));
+      $('#btn-even')?.addEventListener('click', () => answerBit(1));
+    }
+  } else if (sheetStage === 'sum') {
+    // Show which rows add; user types total
+    const addends = userBits
+      .map((b, i) => (b === 1 ? POWERS[i] : null))
+      .filter((x) => x != null);
+    panel.innerHTML = `
+      <div class="sum-hint">
+        <p>Add these numbers:</p>
+        <p class="sum-chips">${
+          addends.length
+            ? addends.map((n) => `<span class="chip">+${n}</span>`).join(' ')
+            : '<span class="chip">+0</span> (all bits were 0)'
+        }</p>
+      </div>
+      <form class="answer-form" id="sum-form">
+        <label class="sr-only" for="sum-input">Total</label>
+        <input type="number" id="sum-input" min="0" max="2047" inputmode="numeric"
+          placeholder="Type the total" autocomplete="off" required />
+        <button type="submit" class="btn-primary">Check total</button>
+      </form>`;
+    $('#sum-form')?.addEventListener('submit', onSumSubmit);
+  } else if (sheetStage === 'word') {
+    panel.innerHTML = `
+      <p class="phase-note">Use the list below. Type <strong>${correctIndex}</strong> in the search box, then tap the matching word.</p>`;
+  } else {
+    panel.innerHTML = '';
+  }
+}
+
+function wireRollControls() {
+  $$('.mode-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const i = Number(btn.dataset.i);
-      if (faces[i] != null) {
-        // Re-roll this slot if in sim mode
-        if (rollMode === 'sim') setFace(i, rollDie(), true);
-      }
+      rollMode = btn.dataset.rollMode;
+      renderActionPanel();
+    });
+  });
+  $('#btn-roll-one')?.addEventListener('click', async () => {
+    const face = rollDie();
+    await applyFace(activeRow, face, true);
+  });
+  $$('#face-pad button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      applyFace(activeRow, Number(btn.dataset.face), false);
     });
   });
 }
 
-async function setFace(index, face, animate = false) {
+async function applyFace(index, face, animate) {
   faces[index] = face;
-  const el = $(`.die[data-i="${index}"]`);
-  if (el) {
-    el.classList.remove('empty');
-    el.classList.add('locked');
-    if (animate) {
-      el.classList.add('rolling');
-      for (let f = 0; f < 4; f++) {
-        el.textContent = String(rollDie());
-        await sleep(30);
-      }
-      el.classList.remove('rolling');
-    }
-    el.textContent = String(face);
-    el.setAttribute('aria-label', `Roll ${index + 1}: ${face}`);
-  }
+  // clear bit if re-rolling
+  userBits[index] = null;
   recomputeAnswer();
-  renderDieTray();
-  updateRollProgress();
-  live.textContent = `Roll ${index + 1}: ${face}`;
-}
-
-async function rollNext() {
-  const idx = faces.findIndex((f) => f == null);
-  if (idx < 0) return;
-  await setFace(idx, rollDie(), true);
-}
-
-function enterPhysicalFace(face) {
-  const idx = faces.findIndex((f) => f == null);
-  if (idx < 0) return;
-  setFace(idx, face, false);
-}
-
-// Mode toggle
-$$('.mode-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    rollMode = btn.dataset.rollMode;
-    $$('.mode-btn').forEach((b) => b.classList.toggle('active', b === btn));
-    $('#sim-controls').hidden = rollMode !== 'sim';
-    $('#phys-controls').hidden = rollMode !== 'phys';
-  });
-});
-
-$('#btn-roll-one')?.addEventListener('click', rollNext);
-$('#btn-clear-rolls')?.addEventListener('click', () => {
-  faces = Array(11).fill(null);
-  renderDieTray();
-  updateRollProgress();
-  recomputeAnswer();
-});
-
-$$('#face-pad button').forEach((btn) => {
-  btn.addEventListener('click', () => enterPhysicalFace(Number(btn.dataset.face)));
-});
-
-// ——— Bits quiz ———
-function startBitsQuiz() {
-  userBits = Array(11).fill(null);
-  bitQuizIndex = 0;
-  showPhase(1);
-  renderBitStrip();
-  showBitQuestion();
-}
-
-function renderBitStrip() {
-  const strip = $('#bit-strip');
-  strip.innerHTML = faces
-    .map((face, i) => {
-      const b = userBits[i];
-      return `<div class="strip-cell ${b != null ? 'done' : ''} ${
-        i === bitQuizIndex ? 'focus' : ''
-      }">
-        <span class="sc-face">${face}</span>
-        <span class="sc-bit">${b == null ? '·' : b}</span>
-      </div>`;
-    })
-    .join('');
-}
-
-function showBitQuestion() {
-  if (bitQuizIndex >= 11) {
-    // All correct
-    showPhase(2);
-    startSumPhase();
-    return;
-  }
-  const face = faces[bitQuizIndex];
-  $('#bit-quiz-count').textContent = `Die ${bitQuizIndex + 1} of 11`;
-  $('#bit-quiz-die').textContent = String(face);
-  $('#bit-feedback').hidden = true;
-  renderBitStrip();
+  renderWorksheet();
+  renderActionPanel();
+  updateLabChrome();
+  if (live) live.textContent = `Row ${index + 1}: rolled ${face}`;
 }
 
 function answerBit(chosenBit) {
-  const face = faces[bitQuizIndex];
+  const face = faces[activeRow];
   const correct = face % 2 === 0 ? 1 : 0;
-  const fb = $('#bit-feedback');
+  const fb = $('#ws-feedback');
   if (chosenBit !== correct) {
-    fb.hidden = false;
-    fb.className = 'quiz-feedback bad';
-    fb.textContent =
-      chosenBit === 1
-        ? `${face} is odd, not even. Odd → 0. Try again.`
-        : `${face} is even, not odd. Even → 1. Try again.`;
-    live.textContent = 'Wrong — try again';
+    if (fb) {
+      fb.hidden = false;
+      fb.className = 'quiz-feedback bad';
+      fb.textContent =
+        correct === 0
+          ? `${face} is odd → bit 0. Try again.`
+          : `${face} is even → bit 1. Try again.`;
+    }
     return;
   }
-  userBits[bitQuizIndex] = correct;
-  fb.hidden = false;
-  fb.className = 'quiz-feedback good';
-  fb.textContent = 'Correct.';
-  bitQuizIndex++;
-  renderBitStrip();
-  setTimeout(() => showBitQuestion(), 350);
+  userBits[activeRow] = correct;
+  if (fb) fb.hidden = true;
+  // advance row or go to sum
+  if (activeRow < 10) {
+    activeRow++;
+  } else {
+    // all rows done
+    recomputeAnswer();
+    sheetStage = 'sum';
+  }
+  renderWorksheet();
+  renderActionPanel();
+  updateLabChrome();
 }
 
-$('#btn-odd')?.addEventListener('click', () => answerBit(0));
-$('#btn-even')?.addEventListener('click', () => answerBit(1));
-
-// ——— Sum phase ———
-function startSumPhase() {
-  const rows = $('#calc-rows');
-  let running = 0;
-  rows.innerHTML = userBits
-    .map((bit, i) => {
-      const power = POWERS[i];
-      const contrib = bit ? power : 0;
-      running += contrib;
-      return `<div class="calc-row ${bit ? 'active' : 'dim'}">
-        <span class="cr-bit">#${i + 1}</span>
-        <span class="cr-eq">${bit} × ${power}</span>
-        <span class="cr-sum">${bit ? `+${power}` : '+0'}</span>
-      </div>`;
-    })
-    .join('');
-  // Don't show answer in running total until they submit - show sum of visible adds as hint?
-  // Show running total of the bits they set (same as answer) - actually that gives it away.
-  // Better: hide the answer, show "add the + rows" and empty running until check
-  $('#calc-running').textContent = '—';
-  $('#sum-input').value = '';
-  $('#sum-feedback').hidden = true;
-}
-
-$('#sum-form')?.addEventListener('submit', (e) => {
+function onSumSubmit(e) {
   e.preventDefault();
-  const val = Number($('#sum-input').value);
-  const fb = $('#sum-feedback');
+  const val = Number($('#sum-input')?.value);
   recomputeAnswer();
+  const fb = $('#ws-feedback');
   if (val !== correctIndex) {
-    fb.hidden = false;
-    fb.className = 'quiz-feedback bad';
-    fb.textContent = 'Not quite. Add every power of two where the bit is 1.';
-    // Optionally show running total of correct after 2 fails? Keep simple.
+    if (fb) {
+      fb.hidden = false;
+      fb.className = 'quiz-feedback bad';
+      fb.textContent = 'Not that total. Add every power where Bit is 1.';
+    }
     return;
   }
-  fb.hidden = false;
-  fb.className = 'quiz-feedback good';
-  fb.textContent = `Yes — ${correctIndex}.`;
-  $('#calc-running').textContent = String(correctIndex);
-  setTimeout(() => startListPhase(), 500);
-});
-
-// ——— Word list phase ———
-function startListPhase() {
-  showPhase(3);
-  $('#find-index').textContent = String(correctIndex);
-  $('#word-found').hidden = true;
-  $('#list-feedback').hidden = true;
-  $('#list-search').value = '';
-  renderFullWordlist('');
-  live.textContent = `Find index ${correctIndex}`;
+  sumChecked = true;
+  if (fb) {
+    fb.hidden = false;
+    fb.className = 'quiz-feedback good';
+    fb.textContent = `Correct — ${correctIndex}.`;
+  }
+  renderWorksheet();
+  // Move to word lookup
+  setTimeout(() => {
+    sheetStage = 'word';
+    $('#ws-list-panel').hidden = false;
+    $('#find-index').textContent = String(correctIndex);
+    $('#list-search').value = '';
+    renderFullWordlist('');
+    renderActionPanel();
+    updateLabChrome();
+    $('#ws-list-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 400);
 }
 
 function renderFullWordlist(query) {
   const el = $('#wordlist');
+  if (!el) return;
   const q = (query || '').trim().toLowerCase();
   let items = [];
 
   if (!q) {
-    el.innerHTML = `<p class="list-empty">Type your number (e.g. <strong>${correctIndex}</strong>) or the start of a word, then tap the matching row.</p>`;
+    el.innerHTML = `<p class="list-empty">Type <strong>${correctIndex}</strong> above, then tap the word on that row.</p>`;
     return;
   }
 
   if (/^\d+$/.test(q)) {
     const n = Number(q);
     if (n < 0 || n > 2047) {
-      el.innerHTML = `<p class="list-empty">Index must be between 0 and 2047.</p>`;
+      el.innerHTML = `<p class="list-empty">Numbers run from 0 to 2047.</p>`;
       return;
     }
-    const start = Math.max(0, n - 8);
-    const end = Math.min(2048, n + 25);
+    const start = Math.max(0, n - 5);
+    const end = Math.min(2048, n + 30);
     for (let i = start; i < end; i++) items.push(i);
   } else {
     for (let i = 0; i < 2048; i++) {
       if (WORDLIST[i].startsWith(q)) items.push(i);
       if (items.length >= 60) break;
     }
-    if (items.length < 20) {
-      for (let i = 0; i < 2048; i++) {
-        if (!WORDLIST[i].startsWith(q) && WORDLIST[i].includes(q)) items.push(i);
-        if (items.length >= 60) break;
-      }
-    }
   }
 
-  if (items.length === 0) {
-    el.innerHTML = `<p class="list-empty">No matches. Try a number 0–2047 or the start of a word.</p>`;
+  if (!items.length) {
+    el.innerHTML = `<p class="list-empty">No matches.</p>`;
     return;
   }
 
   el.innerHTML = items
-    .map((idx) => {
-      return `<button type="button" class="wl-row" data-idx="${idx}" role="listitem">
+    .map(
+      (idx) => `<button type="button" class="wl-row" data-idx="${idx}">
         <span class="wl-num">${idx}</span>
         <span class="wl-word">${WORDLIST[idx]}</span>
-      </button>`;
-    })
+      </button>`
+    )
     .join('');
 
   $$('.wl-row', el).forEach((btn) => {
@@ -521,90 +488,64 @@ function renderFullWordlist(query) {
 }
 
 function pickWord(idx, btn) {
-  const fb = $('#list-feedback');
+  const fb = $('#ws-feedback');
   if (idx !== correctIndex) {
-    fb.hidden = false;
-    fb.className = 'quiz-feedback bad';
-    fb.textContent = `That’s “${WORDLIST[idx]}” (#${idx}). You need #${correctIndex}.`;
+    if (fb) {
+      fb.hidden = false;
+      fb.className = 'quiz-feedback bad';
+      fb.textContent = `#${idx} is “${WORDLIST[idx]}”. You need #${correctIndex}.`;
+    }
     btn.classList.add('wrong');
     setTimeout(() => btn.classList.remove('wrong'), 400);
     return;
   }
-
   btn.classList.add('hit', 'land');
-  fb.hidden = true;
+  if (fb) fb.hidden = true;
+  sheetStage = 'done';
   $('#word-found-text').textContent = correctWord;
-  $('#word-found-meta').textContent = `Index ${correctIndex} · you looked it up yourself`;
+  $('#word-found-meta').textContent = `Index ${correctIndex}`;
   $('#word-found').hidden = false;
-  showPhase(4);
-  live.textContent = `Word: ${correctWord}`;
+  $('#lab-nav').hidden = false;
+  renderWorksheet();
+  renderActionPanel();
+  updateLabChrome();
+  if (live) live.textContent = `Word: ${correctWord}`;
 }
 
 $('#list-search')?.addEventListener('input', (e) => {
   renderFullWordlist(e.target.value);
 });
 
-// Lab nav
+$('#btn-reset-sheet')?.addEventListener('click', () => resetLab());
+
 $('#lab-next')?.addEventListener('click', () => {
-  if (labPhase === 0 && allFilled()) {
-    startBitsQuiz();
-  } else if (labPhase === 4) {
-    goTo(5);
-  }
+  if (sheetStage === 'done') goTo(5);
 });
 
 $('#lab-back')?.addEventListener('click', () => {
-  if (labPhase === 0) {
-    goTo(3);
-  } else if (labPhase === 1) {
-    showPhase(0);
-    renderDieTray();
-    updateRollProgress();
-  } else if (labPhase === 2) {
-    startBitsQuiz();
-  } else if (labPhase === 3 || labPhase === 4) {
-    showPhase(2);
-    startSumPhase();
-  }
+  goTo(3);
 });
-
-function updateRollProgress() {
-  const n = filledCount();
-  const el = $('#roll-progress');
-  if (el) el.textContent = `${n} of 11 rolls`;
-  const clear = $('#btn-clear-rolls');
-  if (clear) clear.hidden = n === 0;
-  const rollBtn = $('#btn-roll-one');
-  if (rollBtn) {
-    rollBtn.disabled = allFilled();
-    rollBtn.textContent = allFilled() ? 'All 11 filled' : `Roll die #${n + 1}`;
-  }
-  if (labPhase === 0) {
-    const nav = $('#lab-nav');
-    const hint = $('#lab-hint');
-    if (nav) nav.hidden = !allFilled();
-    if (hint) {
-      hint.hidden = allFilled();
-      hint.textContent = 'Fill all 11 rolls to continue';
-    }
-    const next = $('#lab-next');
-    if (next) next.textContent = 'Next: mark odd / even';
-  }
-}
 
 // ——— Step 5 ———
 async function animateSeedSlots() {
   const el = $('#seed-slots');
+  if (!el) return;
+  const first = correctWord || '???';
+  const made = $('#made-word');
+  if (made && correctWord) made.textContent = `“${correctWord}”`;
+
   el.innerHTML = Array.from({ length: 12 }, (_, i) => {
-    return `<div class="ss" data-i="${i}"><span class="num">${i + 1}</span><span>${
-      i === 11 ? '✓' : 'dice'
-    }</span></div>`;
+    const label = i === 0 ? first : i === 11 ? '✓' : '·';
+    return `<div class="ss" data-i="${i}"><span class="num">${i + 1}</span><span class="ss-w">${label}</span></div>`;
   }).join('');
-  await sleep(150);
+
+  await sleep(120);
   for (let i = 0; i < 12; i++) {
-    el.querySelector(`[data-i="${i}"]`).classList.add('on');
-    if (i === 11) el.querySelector(`[data-i="${i}"]`).classList.add('checksum');
-    await sleep(90);
+    const node = el.querySelector(`[data-i="${i}"]`);
+    node?.classList.add('on');
+    if (i === 0) node?.classList.add('yours');
+    if (i === 11) node?.classList.add('checksum');
+    await sleep(85);
   }
 }
 
@@ -659,13 +600,10 @@ $('#btn-gen-again')?.addEventListener('click', () => generatePractice(12));
 function init() {
   try {
     bindTutorialNav();
-    renderDieTray();
-    updateRollProgress();
     goTo(0);
     if (WORDLIST.length !== 2048) console.error('Wordlist incomplete');
   } catch (err) {
     console.error('bip39dice init failed', err);
-    // Last resort: make Start still advance via inline-friendly API
     document.querySelectorAll('[data-next]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const steps = [...document.querySelectorAll('.step')];
