@@ -291,10 +291,8 @@ function renderWorksheet() {
   let foot = '';
   if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
     const friendly = buildFriendlyAddends(sumChecked);
-    const full = buildSumEquation(sumChecked);
     foot = `<div class="ws-equation" id="ws-equation">
       <div class="ws-eq-main">${friendly || ''}</div>
-      <div class="ws-eq-detail">${full || ''}</div>
     </div>`;
   }
   el.innerHTML = head + rows + foot;
