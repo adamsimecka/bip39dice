@@ -209,26 +209,23 @@ function updateLabChrome() {
       if (lede) lede.textContent = 'One die is enough. Roll it (or tap 1–6 from a real die).';
     } else if (userBits[activeRow] == null) {
       if (title) title.textContent = 'Even or odd?';
-      if (lede)
-        lede.textContent = `You rolled ${faces[activeRow]}. Even = count this row’s weight. Odd = skip (add 0).`;
+      if (lede) lede.textContent = '';
     }
   } else if (sheetStage === 'sum') {
     if (kicker) kicker.textContent = 'Almost there';
     if (title) title.textContent = 'Add the even rolls';
-    if (lede)
-      lede.textContent =
-        'Even → add that row’s weight. Odd → add 0. Type the sum.';
+    if (lede) lede.textContent = '';
   } else if (sheetStage === 'word') {
     if (kicker) kicker.textContent = 'Last step';
     if (title) title.textContent = 'Find your word';
-    if (lede)
-      lede.textContent = `Look up number ${correctIndex} on the BIP-39 list and tap that word.`;
+    if (lede) lede.textContent = '';
   } else if (sheetStage === 'done') {
     if (kicker) kicker.textContent = 'Done';
     if (title) title.textContent = 'You made a seed word';
-    if (lede)
-      lede.textContent = 'Same process as paper. Never use a website for a funded seed.';
+    if (lede) lede.textContent = '';
   }
+  // Hide empty lede to reclaim space
+  if (lede) lede.hidden = !lede.textContent;
 }
 
 /** Human-readable add for a row: +weight if even, +0 if odd */
@@ -262,40 +259,63 @@ function buildFriendlyAddends(revealTotal) {
 function renderWorksheet() {
   const el = $('#worksheet');
   if (!el) return;
+
+  // After rows are filled, collapse the big table so later steps fit on screen
+  if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
+    const friendly = buildFriendlyAddends(sumChecked);
+    const facesStr = faces.map((f) => f ?? '·').join(' ');
+    el.className = 'worksheet compact';
+    el.innerHTML = `
+      <div class="ws-summary">
+        <div class="ws-summary-line"><span>Rolls</span><strong>${facesStr}</strong></div>
+        <div class="ws-summary-line eq"><span>Sum</span><strong>${friendly || '…'}</strong></div>
+      </div>`;
+    return;
+  }
+
+  el.className = 'worksheet';
   const head = `
     <div class="ws-row ws-head">
       <span>#</span><span>Roll</span><span>Even?</span><span>Weight</span><span>Add</span>
     </div>`;
-  const rows = faces
-    .map((face, i) => {
-      const bit = userBits[i];
-      const weight = POWERS[i];
-      const evenLabel =
-        face == null ? '—' : bit == null ? '?' : bit === 1 ? 'yes' : 'no';
-      const add = rowAddLabel(bit, weight);
-      const isActive = sheetStage === 'row' && i === activeRow;
-      const isDone = face != null && bit != null;
-      const keep = bit === 1;
-      return `<div class="ws-row ${isActive ? 'active' : ''} ${isDone ? 'done' : ''} ${
-        keep ? 'keep' : ''
-      }" data-row="${i}">
-        <span class="ws-n">${i + 1}</span>
-        <span class="ws-face">${face ?? '·'}</span>
-        <span class="ws-oe ${bit === 1 ? 'yes' : bit === 0 ? 'no' : ''}">${evenLabel}</span>
-        <span class="ws-pow">${weight}</span>
-        <span class="ws-add ${keep ? 'keep-add' : ''}">${add}</span>
-      </div>`;
-    })
-    .join('');
+  // While filling: show only a short window of rows around the active one
+  const windowSize = 5;
+  let start = Math.max(0, activeRow - 1);
+  let end = Math.min(11, start + windowSize);
+  if (end - start < windowSize) start = Math.max(0, end - windowSize);
 
-  let foot = '';
-  if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
-    const friendly = buildFriendlyAddends(sumChecked);
-    foot = `<div class="ws-equation" id="ws-equation">
-      <div class="ws-eq-main">${friendly || ''}</div>
-    </div>`;
+  const rows = [];
+  if (start > 0) {
+    rows.push(
+      `<div class="ws-row ws-more">↑ ${start} earlier row${start === 1 ? '' : 's'} filled</div>`
+    );
   }
-  el.innerHTML = head + rows + foot;
+  for (let i = start; i < end; i++) {
+    const face = faces[i];
+    const bit = userBits[i];
+    const weight = POWERS[i];
+    const evenLabel =
+      face == null ? '—' : bit == null ? '?' : bit === 1 ? 'yes' : 'no';
+    const add = rowAddLabel(bit, weight);
+    const isActive = i === activeRow;
+    const isDone = face != null && bit != null;
+    const keep = bit === 1;
+    rows.push(`<div class="ws-row ${isActive ? 'active' : ''} ${isDone ? 'done' : ''} ${
+      keep ? 'keep' : ''
+    }" data-row="${i}">
+      <span class="ws-n">${i + 1}</span>
+      <span class="ws-face">${face ?? '·'}</span>
+      <span class="ws-oe ${bit === 1 ? 'yes' : bit === 0 ? 'no' : ''}">${evenLabel}</span>
+      <span class="ws-pow">${weight}</span>
+      <span class="ws-add ${keep ? 'keep-add' : ''}">${add}</span>
+    </div>`);
+  }
+  if (end < 11) {
+    rows.push(
+      `<div class="ws-row ws-more">↓ ${11 - end} row${11 - end === 1 ? '' : 's'} left</div>`
+    );
+  }
+  el.innerHTML = head + rows.join('');
 }
 
 function renderActionPanel() {
@@ -350,38 +370,29 @@ function renderActionPanel() {
       $('#btn-even')?.addEventListener('click', () => answerBit(1));
     }
   } else if (sheetStage === 'sum') {
-    const friendly = buildFriendlyAddends(false);
     const kept = userBits
       .map((b, i) => (b === 1 ? POWERS[i] : null))
       .filter((x) => x != null);
     panel.innerHTML = `
-      <div class="sum-hint">
-        <p class="sum-label">What to add (even rolls only)</p>
+      <div class="sum-hint compact">
         <p class="sum-chips">${
           kept.length
             ? kept.map((n) => `<span class="chip">+${n}</span>`).join('')
-            : '<span class="chip">+0</span> <span class="sum-hint-note">no even rolls</span>'
+            : '<span class="chip">+0</span>'
         }</p>
-        <p class="sum-equation" id="sum-equation-live">${friendly}</p>
-        <p class="sum-hint-note">Add those weights. Odds already count as zero.</p>
       </div>
       <form class="answer-form" id="sum-form">
         <label class="sr-only" for="sum-input">Total</label>
         <input type="number" id="sum-input" min="0" max="2047" inputmode="numeric"
-          placeholder="Total (0–2047)" autocomplete="off" required />
+          placeholder="Type the total" autocomplete="off" required />
         <button type="submit" class="btn-primary">Check total</button>
       </form>`;
     $('#sum-form')?.addEventListener('submit', onSumSubmit);
   } else if (sheetStage === 'word') {
     panel.innerHTML = `
-      <p class="phase-note">Scroll the list to <strong>${correctIndex}</strong> (or search), then tap that word.</p>`;
+      <p class="phase-note tight">Find <strong>${correctIndex}</strong> on the list and tap it.</p>`;
   } else if (sheetStage === 'done') {
-    const friendly = buildFriendlyAddends(true);
-    panel.innerHTML = `
-      <div class="sum-hint done-eq">
-        <p class="sum-label">Even rolls added up to</p>
-        <p class="sum-equation">${friendly}</p>
-      </div>`;
+    panel.innerHTML = '';
   } else {
     panel.innerHTML = '';
   }
