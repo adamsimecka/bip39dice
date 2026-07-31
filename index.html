@@ -153,26 +153,85 @@
       <!-- ===== STEP 3: What you're about to do ===== -->
       <section class="step" data-step="3" id="step-3" hidden>
         <h1>How one seed word is made</h1>
-        <p class="lede">Think of a paper worksheet with 11 rows. You’ll fill it in order:</p>
-        <ol class="recipe big-recipe">
-          <li>
-            <strong>Roll</strong>
-            <span>One die, eleven times (or eleven dice once)</span>
-          </li>
-          <li>
-            <strong>Odd or even?</strong>
-            <span>Odd = 0 · Even = 1</span>
-          </li>
-          <li>
-            <strong>Add</strong>
-            <span>Only the “1” rows, using powers of two</span>
-          </li>
-          <li>
-            <strong>Look up</strong>
-            <span>That total on the BIP-39 word list</span>
-          </li>
-        </ol>
-        <p class="lede tight">On the next screen you’ll use a live worksheet. One row at a time.</p>
+        <p class="lede">Four steps. You’ll do each one on the next screen.</p>
+
+        <div class="demo-steps">
+          <article class="demo-card">
+            <img
+              class="demo-img"
+              src="images/step-roll.svg"
+              alt="A die on a green table with labels for 1st through 11th roll"
+              width="320"
+              height="180"
+              loading="lazy"
+            />
+            <div class="demo-copy">
+              <span class="demo-num">1</span>
+              <div>
+                <strong>Roll</strong>
+                <p>One die, eleven times (or eleven dice once). Write each face 1–6.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <img
+              class="demo-img"
+              src="images/step-bits.svg"
+              alt="Odd roll becomes bit 0, even roll becomes bit 1"
+              width="320"
+              height="180"
+              loading="lazy"
+            />
+            <div class="demo-copy">
+              <span class="demo-num">2</span>
+              <div>
+                <strong>Odd or even?</strong>
+                <p>Odd face → bit <code>0</code>. Even face → bit <code>1</code>.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <img
+              class="demo-img"
+              src="images/step-add.svg"
+              alt="Notepad showing bit times power equations equaling a total"
+              width="320"
+              height="180"
+              loading="lazy"
+            />
+            <div class="demo-copy">
+              <span class="demo-num">3</span>
+              <div>
+                <strong>Multiply and add</strong>
+                <p>
+                  Each row is <code>bit × power</code> (powers: 1, 2, 4, … 1024). Sum them
+                  for a number from 0 to 2047.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <img
+              class="demo-img"
+              src="images/step-lookup.svg"
+              alt="Word list with index 517 highlighted as the word either"
+              width="320"
+              height="180"
+              loading="lazy"
+            />
+            <div class="demo-copy">
+              <span class="demo-num">4</span>
+              <div>
+                <strong>Look up the word</strong>
+                <p>Find that number on the BIP-39 list. That word is one seed word.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
           <button type="button" class="btn-primary" data-next>Open the worksheet</button>

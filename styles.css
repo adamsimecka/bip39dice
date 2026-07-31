@@ -1467,6 +1467,88 @@ a:hover {
   font-size: 0.92rem;
 }
 
+/* Step 3 demo cards with images */
+.demo-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+}
+
+.demo-card {
+  background: var(--cream);
+  border: 2.5px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  overflow: hidden;
+  animation: slotIn 0.4s ease backwards;
+}
+
+.demo-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.demo-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.demo-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.demo-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.demo-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper-deep);
+}
+
+.demo-copy {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.85rem 0.9rem 1rem;
+}
+
+.demo-num {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--ink);
+  background: var(--brick);
+  color: var(--cream);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.demo-copy strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
+  color: var(--ink);
+}
+
+.demo-copy p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.demo-copy code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--paper-deep);
+  padding: 0.05em 0.3em;
+  border: 1px solid var(--line-strong);
+}
+
 .path-cards {
   display: grid;
   gap: 0.65rem;
