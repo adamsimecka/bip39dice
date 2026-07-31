@@ -374,7 +374,7 @@ function renderActionPanel() {
     $('#sum-form')?.addEventListener('submit', onSumSubmit);
   } else if (sheetStage === 'word') {
     panel.innerHTML = `
-      <p class="phase-note">Type <strong>${correctIndex}</strong> in the search box below, then tap that word on the list.</p>`;
+      <p class="phase-note">Scroll the list to <strong>${correctIndex}</strong> (or search), then tap that word.</p>`;
   } else if (sheetStage === 'done') {
     const friendly = buildFriendlyAddends(true);
     panel.innerHTML = `
@@ -475,7 +475,11 @@ function onSumSubmit(e) {
     renderFullWordlist('');
     renderActionPanel();
     updateLabChrome();
-    $('#ws-list-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const panel = $('#ws-list-panel');
+    panel?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Start near the top of the full list (user scrolls/searches to their number)
+    const list = $('#wordlist');
+    if (list) list.scrollTop = 0;
   }, 400);
 }
 
@@ -484,30 +488,31 @@ function renderFullWordlist(query) {
   if (!el) return;
   const q = (query || '').trim().toLowerCase();
   let items = [];
+  let scrollToIdx = null;
 
   if (!q) {
-    el.innerHTML = `<p class="list-empty">Type <strong>${correctIndex}</strong> above, then tap the word on that row.</p>`;
-    return;
-  }
-
-  if (/^\d+$/.test(q)) {
+    // Full list always visible — scrollable
+    for (let i = 0; i < 2048; i++) items.push(i);
+  } else if (/^\d+$/.test(q)) {
     const n = Number(q);
     if (n < 0 || n > 2047) {
       el.innerHTML = `<p class="list-empty">Numbers run from 0 to 2047.</p>`;
       return;
     }
-    const start = Math.max(0, n - 5);
-    const end = Math.min(2048, n + 30);
+    // Show a window around the typed number so the match is easy to spot
+    const start = Math.max(0, n - 12);
+    const end = Math.min(2048, n + 40);
     for (let i = start; i < end; i++) items.push(i);
+    scrollToIdx = n;
   } else {
     for (let i = 0; i < 2048; i++) {
-      if (WORDLIST[i].startsWith(q)) items.push(i);
-      if (items.length >= 60) break;
+      if (WORDLIST[i].startsWith(q) || WORDLIST[i].includes(q)) items.push(i);
+      if (items.length >= 120) break;
     }
   }
 
   if (!items.length) {
-    el.innerHTML = `<p class="list-empty">No matches.</p>`;
+    el.innerHTML = `<p class="list-empty">No matches. Clear search to see the full list.</p>`;
     return;
   }
 
@@ -523,6 +528,13 @@ function renderFullWordlist(query) {
   $$('.wl-row', el).forEach((btn) => {
     btn.addEventListener('click', () => pickWord(Number(btn.dataset.idx), btn));
   });
+
+  if (scrollToIdx != null) {
+    requestAnimationFrame(() => {
+      const row = el.querySelector(`[data-idx="${scrollToIdx}"]`);
+      row?.scrollIntoView({ block: 'center' });
+    });
+  }
 }
 
 function pickWord(idx, btn) {
