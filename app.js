@@ -214,10 +214,10 @@ function updateLabChrome() {
     }
   } else if (sheetStage === 'sum') {
     if (kicker) kicker.textContent = 'Almost there';
-    if (title) title.textContent = 'Add the “1” rows';
+    if (title) title.textContent = 'Calculate the number';
     if (lede)
       lede.textContent =
-        'Each row with bit 1 adds its power of two. Sum them (0–2047), then enter the total.';
+        'Each row is bit × power. Add every product, then type the total.';
   } else if (sheetStage === 'word') {
     if (kicker) kicker.textContent = 'Last step';
     if (title) title.textContent = 'Find your word';
@@ -231,44 +231,59 @@ function updateLabChrome() {
   }
 }
 
+function rowEquation(bit, power) {
+  if (bit == null) return '—';
+  return `${bit}×${power}`;
+}
+
+function rowProduct(bit, power) {
+  if (bit == null) return '—';
+  return bit * power;
+}
+
+/** Full sum equation string, e.g. 1×1 + 0×2 + 1×4 = 5 */
+function buildSumEquation(revealTotal) {
+  const parts = userBits.map((bit, i) => {
+    if (bit == null) return null;
+    return `${bit}×${POWERS[i]}`;
+  });
+  if (parts.some((p) => p == null)) return null;
+  const left = parts.join(' + ');
+  const right = revealTotal && correctIndex != null ? String(correctIndex) : '?';
+  return `${left} = ${right}`;
+}
+
 function renderWorksheet() {
   const el = $('#worksheet');
   if (!el) return;
   const head = `
     <div class="ws-row ws-head">
-      <span>#</span><span>Roll</span><span>O/E</span><span>Bit</span><span>Power</span><span>Add</span>
+      <span>#</span><span>Roll</span><span>Bit</span><span>Equation</span><span>=</span>
     </div>`;
   const rows = faces
     .map((face, i) => {
       const bit = userBits[i];
       const power = POWERS[i];
-      const add = bit === 1 ? power : bit === 0 ? 0 : '—';
-      const oe =
-        face == null ? '—' : bit == null ? '?' : face % 2 === 0 ? 'even' : 'odd';
+      const eq = rowEquation(bit, power);
+      const prod = rowProduct(bit, power);
       const isActive = sheetStage === 'row' && i === activeRow;
       const isDone = face != null && bit != null;
       return `<div class="ws-row ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}" data-row="${i}">
         <span class="ws-n">${i + 1}</span>
         <span class="ws-face">${face ?? '·'}</span>
-        <span class="ws-oe">${oe}</span>
         <span class="ws-bit ${bit === 1 ? 'one' : bit === 0 ? 'zero' : ''}">${
           bit == null ? '·' : bit
         }</span>
-        <span class="ws-pow">${power}</span>
-        <span class="ws-add">${add}</span>
+        <span class="ws-eq">${eq}</span>
+        <span class="ws-add">${prod}</span>
       </div>`;
     })
     .join('');
 
   let foot = '';
   if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
-    foot = `<div class="ws-row ws-foot">
-      <span></span><span></span><span></span><span></span>
-      <span class="ws-pow">Total</span>
-      <span class="ws-add total" id="ws-total-display">${
-        sumChecked ? correctIndex : '?'
-      }</span>
-    </div>`;
+    const eq = buildSumEquation(sumChecked);
+    foot = `<div class="ws-equation" id="ws-equation">${eq || ''}</div>`;
   }
   el.innerHTML = head + rows + foot;
 }
@@ -321,29 +336,30 @@ function renderActionPanel() {
       $('#btn-even')?.addEventListener('click', () => answerBit(1));
     }
   } else if (sheetStage === 'sum') {
-    // Show which rows add; user types total
-    const addends = userBits
-      .map((b, i) => (b === 1 ? POWERS[i] : null))
-      .filter((x) => x != null);
+    const eq = buildSumEquation(false);
     panel.innerHTML = `
       <div class="sum-hint">
-        <p>Add these numbers:</p>
-        <p class="sum-chips">${
-          addends.length
-            ? addends.map((n) => `<span class="chip">+${n}</span>`).join(' ')
-            : '<span class="chip">+0</span> (all bits were 0)'
-        }</p>
+        <p class="sum-label">Full equation</p>
+        <p class="sum-equation" id="sum-equation-live">${eq}</p>
+        <p class="sum-hint-note">Add the products on the right (or expand each bit×power). Type the number after =</p>
       </div>
       <form class="answer-form" id="sum-form">
         <label class="sr-only" for="sum-input">Total</label>
         <input type="number" id="sum-input" min="0" max="2047" inputmode="numeric"
-          placeholder="Type the total" autocomplete="off" required />
+          placeholder="Total (0–2047)" autocomplete="off" required />
         <button type="submit" class="btn-primary">Check total</button>
       </form>`;
     $('#sum-form')?.addEventListener('submit', onSumSubmit);
   } else if (sheetStage === 'word') {
     panel.innerHTML = `
-      <p class="phase-note">Use the list below. Type <strong>${correctIndex}</strong> in the search box, then tap the matching word.</p>`;
+      <p class="phase-note">Type <strong>${correctIndex}</strong> in the search box below, then tap that word on the list.</p>`;
+  } else if (sheetStage === 'done') {
+    const eq = buildSumEquation(true);
+    panel.innerHTML = `
+      <div class="sum-hint done-eq">
+        <p class="sum-label">Your equation</p>
+        <p class="sum-equation">${eq}</p>
+      </div>`;
   } else {
     panel.innerHTML = '';
   }
