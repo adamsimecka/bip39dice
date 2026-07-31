@@ -255,10 +255,13 @@
         </div>
         <p class="lede" id="lab-lede" hidden></p>
 
-        <!-- Compact focused worksheet (single row / summary) -->
-        <div class="worksheet" id="worksheet" aria-label="Dice worksheet"></div>
+        <!-- Fixed-height progress while rolling (no live table — avoids shift) -->
+        <div class="row-progress" id="row-progress" aria-label="Row progress"></div>
 
-        <!-- Context-sensitive action panel -->
+        <!-- Summary only after all 11 rows (sum / word / done) -->
+        <div class="worksheet" id="worksheet" aria-label="Dice worksheet" hidden></div>
+
+        <!-- Fixed-height action slot: Roll screen OR Even/odd screen, never both -->
         <div class="ws-action" id="ws-action">
           <!-- filled by JS -->
         </div>

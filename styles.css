@@ -1640,6 +1640,93 @@ body.lab-step .stage {
   margin-bottom: 0;
 }
 
+/* Fixed slot while rolling: Roll and Even/odd swap in place — no height jump */
+#step-4 .ws-action.row-slot {
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+}
+
+#step-4 .ws-action.row-slot .row-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.45rem;
+}
+
+#step-4 .row-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 28px;
+  padding: 0.15rem 0.1rem 0.35rem;
+  flex-shrink: 0;
+}
+
+#step-4 .row-progress[hidden] {
+  display: none !important;
+}
+
+#step-4 .row-progress .ws-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+#step-4 .row-progress .ws-progress-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+#step-4 .bit-screen {
+  align-items: center;
+  text-align: center;
+}
+
+#step-4 .bit-screen .quiz-die {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  font-size: 1.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: linear-gradient(145deg, #fffef8, #e8e0d0);
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+#step-4 .bit-screen .bit-note {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+#step-4 .bit-screen .quiz-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+#step-4 .bit-screen .quiz-btn {
+  padding: 0.7rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+#step-4 .worksheet[hidden] {
+  display: none !important;
+}
+
 #step-4 .quiz-feedback {
   flex-shrink: 0;
   margin: 0;

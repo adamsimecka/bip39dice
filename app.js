@@ -197,6 +197,7 @@ function resetLab() {
   const search = $('#list-search');
   if (search) search.value = '';
   renderWorksheet();
+  renderRowProgress();
   renderActionPanel();
   updateLabChrome();
 }
@@ -261,7 +262,18 @@ function renderWorksheet() {
   const el = $('#worksheet');
   if (!el) return;
 
-  // After rows are filled: one-line summary only (no multi-row table)
+  // During row fill: hide the sheet entirely — only progress dots + action.
+  // Showing a live table under/above Roll causes layout shift on every roll.
+  if (sheetStage === 'row') {
+    el.className = 'worksheet focus';
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+
+  el.hidden = false;
+
+  // Sum / word / done: compact summary only
   if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
     const friendly = buildFriendlyAddends(sumChecked);
     const facesStr = faces.map((f) => f ?? '·').join(' ');
@@ -274,34 +286,26 @@ function renderWorksheet() {
     return;
   }
 
-  // During row fill: progress dots + single focused row (no scrolling table)
-  const i = activeRow;
-  const face = faces[i];
-  const bit = userBits[i];
-  const weight = POWERS[i];
-  const evenLabel =
-    face == null ? '—' : bit == null ? '?' : bit === 1 ? 'yes' : 'no';
-  const add = rowAddLabel(bit, weight);
-  const keep = bit === 1;
+  el.innerHTML = '';
+}
+
+function renderRowProgress() {
+  const el = $('#row-progress');
+  if (!el) return;
+  if (sheetStage !== 'row') {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  el.hidden = false;
   const dots = Array.from({ length: 11 }, (_, d) => {
     const done = faces[d] != null && userBits[d] != null;
     const on = d === activeRow;
     return `<span class="ws-dot ${done ? 'done' : ''} ${on ? 'on' : ''}" title="Row ${d + 1}"></span>`;
   }).join('');
-
-  el.className = 'worksheet focus';
   el.innerHTML = `
-    <div class="ws-progress" aria-label="Row ${i + 1} of 11">
-      <div class="ws-dots">${dots}</div>
-      <span class="ws-progress-label">${i + 1}/11</span>
-    </div>
-    <div class="ws-row active ${keep ? 'keep' : ''}" data-row="${i}">
-      <span class="ws-n">${i + 1}</span>
-      <span class="ws-face">${face ?? '·'}</span>
-      <span class="ws-oe ${bit === 1 ? 'yes' : bit === 0 ? 'no' : ''}">${evenLabel}</span>
-      <span class="ws-pow">×${weight}</span>
-      <span class="ws-add ${keep ? 'keep-add' : ''}">${add}</span>
-    </div>`;
+    <div class="ws-dots" aria-hidden="true">${dots}</div>
+    <span class="ws-progress-label">${Math.min(activeRow + 1, 11)}/11</span>`;
 }
 
 function renderActionPanel() {
@@ -310,44 +314,47 @@ function renderActionPanel() {
   const fb = $('#ws-feedback');
   if (fb) fb.hidden = true;
 
+  // Keep a stable slot height while looping rows so Roll ↔ Even/odd never jumps
+  panel.classList.toggle('row-slot', sheetStage === 'row');
+
   if (sheetStage === 'row') {
     const face = faces[activeRow];
     if (face == null) {
-      // Need a roll — compact controls
+      // Roll screen only — nothing stacked underneath
       panel.innerHTML = `
-        <div class="mode-row slim" role="group">
-          <button type="button" class="mode-btn ${
-            rollMode === 'sim' ? 'active' : ''
-          }" data-roll-mode="sim">Simulate</button>
-          <button type="button" class="mode-btn ${
-            rollMode === 'phys' ? 'active' : ''
-          }" data-roll-mode="phys">Real die</button>
-        </div>
-        <div id="sim-controls" ${rollMode === 'phys' ? 'hidden' : ''}>
-          <button type="button" class="btn-primary" id="btn-roll-one">Roll</button>
-        </div>
-        <div id="phys-controls" ${rollMode === 'sim' ? 'hidden' : ''}>
-          <div class="face-pad slim" id="face-pad">
-            ${[1, 2, 3, 4, 5, 6]
-              .map((n) => `<button type="button" data-face="${n}">${n}</button>`)
-              .join('')}
+        <div class="row-screen roll-screen">
+          <div class="mode-row slim" role="group">
+            <button type="button" class="mode-btn ${
+              rollMode === 'sim' ? 'active' : ''
+            }" data-roll-mode="sim">Simulate</button>
+            <button type="button" class="mode-btn ${
+              rollMode === 'phys' ? 'active' : ''
+            }" data-roll-mode="phys">Real die</button>
+          </div>
+          <div id="sim-controls" ${rollMode === 'phys' ? 'hidden' : ''}>
+            <button type="button" class="btn-primary" id="btn-roll-one">Roll</button>
+          </div>
+          <div id="phys-controls" ${rollMode === 'sim' ? 'hidden' : ''}>
+            <div class="face-pad slim" id="face-pad">
+              ${[1, 2, 3, 4, 5, 6]
+                .map((n) => `<button type="button" data-face="${n}">${n}</button>`)
+                .join('')}
+            </div>
           </div>
         </div>`;
       wireRollControls();
     } else {
-      // Need odd/even — horizontal card to save height
+      // Separate "page": even/odd only (replaces roll UI, same slot)
       const weight = POWERS[activeRow];
       panel.innerHTML = `
-        <div class="quiz-card compact flat">
-          <div class="quiz-flat-row">
-            <div class="quiz-die" id="bit-quiz-die">${face}</div>
-            <p class="phase-note">
-              Weight <strong>${weight}</strong>. Even → +${weight}. Odd → +0.
-            </p>
-          </div>
+        <div class="row-screen bit-screen">
+          <div class="quiz-die" id="bit-quiz-die">${face}</div>
+          <p class="phase-note bit-note">
+            Even → <strong>+${weight}</strong> · Odd → <strong>+0</strong>
+          </p>
           <div class="quiz-actions">
-            <button type="button" class="quiz-btn" id="btn-odd">Odd → <strong>skip</strong></button>
-            <button type="button" class="quiz-btn" id="btn-even">Even → <strong>+${weight}</strong></button>
+            <button type="button" class="quiz-btn" id="btn-odd">Odd → skip</button>
+            <button type="button" class="quiz-btn" id="btn-even">Even → +${weight}</button>
           </div>
         </div>`;
       $('#btn-odd')?.addEventListener('click', () => answerBit(0));
@@ -373,7 +380,6 @@ function renderActionPanel() {
       </form>`;
     $('#sum-form')?.addEventListener('submit', onSumSubmit);
   } else if (sheetStage === 'word') {
-    // Banner already shows the number — no extra note
     panel.innerHTML = '';
   } else if (sheetStage === 'done') {
     panel.innerHTML = '';
@@ -405,7 +411,9 @@ async function applyFace(index, face, animate) {
   // clear bit if re-rolling
   userBits[index] = null;
   recomputeAnswer();
+  // Swap to the even/odd screen in the same fixed slot — no extra chrome below Roll
   renderWorksheet();
+  renderRowProgress();
   renderActionPanel();
   updateLabChrome();
   if (live) live.textContent = `Row ${index + 1}: rolled ${face}`;
@@ -432,11 +440,12 @@ function answerBit(chosenBit) {
   if (activeRow < 10) {
     activeRow++;
   } else {
-    // all rows done
+    // all rows done — summary + add step (the "sheet" lives here)
     recomputeAnswer();
     sheetStage = 'sum';
   }
   renderWorksheet();
+  renderRowProgress();
   renderActionPanel();
   updateLabChrome();
 }
@@ -461,6 +470,7 @@ function onSumSubmit(e) {
     fb.textContent = `Correct — ${correctIndex}.`;
   }
   renderWorksheet();
+  renderRowProgress();
   // Move to word lookup quickly — keep chrome minimal so list fits
   setTimeout(() => {
     sheetStage = 'word';
@@ -470,6 +480,7 @@ function onSumSubmit(e) {
     $('#list-search').value = '';
     renderFullWordlist('');
     renderActionPanel();
+    renderRowProgress();
     updateLabChrome();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     const list = $('#wordlist');
@@ -551,6 +562,7 @@ function pickWord(idx, btn) {
   $('#word-found').hidden = false;
   $('#lab-nav').hidden = false;
   renderWorksheet();
+  renderRowProgress();
   renderActionPanel();
   updateLabChrome();
   if (live) live.textContent = `Word: ${correctWord}`;
