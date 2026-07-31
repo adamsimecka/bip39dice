@@ -103,7 +103,7 @@
               </svg>
             </div>
             <strong>Dice</strong>
-            <span>Fair six-sided dice</span>
+            <span>Even one d6 is enough</span>
           </div>
           <div class="need-card">
             <div class="need-icon" aria-hidden="true">
@@ -174,72 +174,131 @@
         </div>
         <h1>One word, four steps</h1>
         <ol class="recipe">
-          <li><strong>Roll</strong> 11 dice</li>
-          <li><strong>Odd = 0</strong>, <strong>even = 1</strong></li>
-          <li><strong>Add</strong> powers of two → a number 0–2047</li>
-          <li><strong>Find</strong> that number on the BIP-39 word list</li>
+          <li><strong>Roll</strong> a die 11 times (one die is enough)</li>
+          <li><strong>You</strong> mark each roll odd→0 or even→1</li>
+          <li><strong>You</strong> add powers of two → a number 0–2047</li>
+          <li><strong>You</strong> find that number on the BIP-39 list</li>
         </ol>
-        <p class="lede tight">Next you’ll do all four — slowly, with the list on screen.</p>
+        <p class="lede tight">Next you’ll do every step yourself — we won’t skip ahead for you.</p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
-          <button type="button" class="btn-primary" data-next>Try it yourself</button>
+          <button type="button" class="btn-primary" data-next>I’ll do it myself</button>
         </div>
       </section>
 
-      <!-- ===== STEP 4: Guided make-a-word lab ===== -->
+      <!-- ===== STEP 4: Interactive lab ===== -->
       <section class="step" data-step="4" id="step-4" hidden>
-        <p class="step-kicker" id="lab-kicker">Step A of 4</p>
-        <h1 id="lab-title">Roll 11 dice</h1>
-        <p class="lede" id="lab-lede">Same as you’d do on paper. Tap when ready.</p>
+        <p class="step-kicker" id="lab-kicker">Part 1 of 4</p>
+        <h1 id="lab-title">Get 11 rolls</h1>
+        <p class="lede" id="lab-lede">
+          One die is fine — roll it eleven times. Or enter faces from a real die.
+        </p>
 
-        <!-- Phase A: dice -->
+        <!-- Phase A: fill rolls one at a time -->
         <div id="lab-phase-a">
+          <div class="mode-row" role="group" aria-label="How to enter rolls">
+            <button type="button" class="mode-btn active" data-roll-mode="sim">Simulate roll</button>
+            <button type="button" class="mode-btn" data-roll-mode="phys">I have a real die</button>
+          </div>
+
+          <p class="roll-progress" id="roll-progress">0 of 11 rolls</p>
           <div class="die-tray" id="die-tray"></div>
-          <button type="button" class="btn-primary" id="btn-roll">Roll 11 dice</button>
+
+          <div id="sim-controls">
+            <button type="button" class="btn-primary" id="btn-roll-one">Roll next die</button>
+          </div>
+          <div id="phys-controls" hidden>
+            <p class="phase-note">Tap the face you rolled:</p>
+            <div class="face-pad" id="face-pad">
+              <button type="button" data-face="1">1</button>
+              <button type="button" data-face="2">2</button>
+              <button type="button" data-face="3">3</button>
+              <button type="button" data-face="4">4</button>
+              <button type="button" data-face="5">5</button>
+              <button type="button" data-face="6">6</button>
+            </div>
+          </div>
+          <button type="button" class="btn-ghost full" id="btn-clear-rolls" hidden>Clear all rolls</button>
         </div>
 
-        <!-- Phase B: bits -->
+        <!-- Phase B: user maps each die to bit -->
         <div id="lab-phase-b" hidden>
-          <div class="bit-map" id="bit-map"></div>
-          <p class="phase-note">
-            <span class="tag odd">Odd → 0</span>
-            <span class="tag even">Even → 1</span>
-          </p>
+          <div class="quiz-card" id="bit-quiz">
+            <p class="quiz-count" id="bit-quiz-count">Die 1 of 11</p>
+            <div class="quiz-die" id="bit-quiz-die">?</div>
+            <p class="phase-note">Is this odd or even?</p>
+            <div class="quiz-actions">
+              <button type="button" class="quiz-btn" id="btn-odd" data-bit="0">
+                Odd → <strong>0</strong>
+              </button>
+              <button type="button" class="quiz-btn" id="btn-even" data-bit="1">
+                Even → <strong>1</strong>
+              </button>
+            </div>
+            <p class="quiz-feedback" id="bit-feedback" hidden></p>
+          </div>
+          <div class="bit-strip" id="bit-strip" aria-label="Bits so far"></div>
         </div>
 
-        <!-- Phase C: number -->
+        <!-- Phase C: user computes the number -->
         <div id="lab-phase-c" hidden>
-          <div class="calc-card" id="calc-card">
+          <div class="calc-card">
             <div class="calc-rows" id="calc-rows"></div>
             <div class="calc-total">
-              <span>Total</span>
-              <strong id="calc-total">0</strong>
+              <span>Running total</span>
+              <strong id="calc-running">0</strong>
             </div>
           </div>
-          <p class="phase-note">Each “1” bit adds its power of two. Zeros add nothing.</p>
+          <p class="phase-note">Add every row where the bit is 1. Enter the final total:</p>
+          <form class="answer-form" id="sum-form">
+            <input
+              type="number"
+              id="sum-input"
+              min="0"
+              max="2047"
+              inputmode="numeric"
+              placeholder="0–2047"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn-primary">Check my total</button>
+          </form>
+          <p class="quiz-feedback" id="sum-feedback" hidden></p>
         </div>
 
-        <!-- Phase D: wordlist lookup -->
+        <!-- Phase D: user finds word on full list -->
         <div id="lab-phase-d" hidden>
-          <div class="list-chrome">
-            <div class="list-chrome-top">
-              <span>BIP-39 English list</span>
-              <span class="list-target" id="list-target">looking for #…</span>
-            </div>
-            <div class="wordlist" id="wordlist" role="list"></div>
+          <div class="find-banner">
+            Find index <strong id="find-index">—</strong> on the list and tap it
           </div>
+          <div class="list-chrome tall">
+            <div class="list-chrome-top">
+              <span>BIP-39 English (2,048 words)</span>
+            </div>
+            <div class="list-tools">
+              <input
+                type="search"
+                id="list-search"
+                placeholder="Search number or word…"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+            <div class="wordlist full" id="wordlist" role="list"></div>
+          </div>
+          <p class="quiz-feedback" id="list-feedback" hidden></p>
           <div class="word-found" id="word-found" hidden>
-            <p class="word-found-label">Your word</p>
+            <p class="word-found-label">You found</p>
             <p class="word-found-text" id="word-found-text">—</p>
             <p class="word-found-meta" id="word-found-meta"></p>
           </div>
         </div>
 
         <div class="nav-row" id="lab-nav" hidden>
-          <button type="button" class="btn-ghost" data-back id="lab-back">Back</button>
+          <button type="button" class="btn-ghost" id="lab-back">Back</button>
           <button type="button" class="btn-primary" id="lab-next">Continue</button>
         </div>
-        <p class="hint-wait" id="lab-hint">Roll to begin</p>
+        <p class="hint-wait" id="lab-hint">Fill all 11 rolls to continue</p>
       </section>
 
       <!-- ===== STEP 5: Full seed structure ===== -->
