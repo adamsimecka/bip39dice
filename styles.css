@@ -854,3 +854,385 @@ a {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
 }
+
+/* What you'll need */
+.needs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin: 0 0 1.35rem;
+}
+
+.need-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem 0.85rem;
+  text-align: center;
+  animation: slotIn 0.4s ease backwards;
+}
+
+.need-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.need-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.need-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.need-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.need-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 0.55rem;
+  color: var(--orange);
+}
+
+.need-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.need-card strong {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 0.2rem;
+}
+
+.need-card span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+/* Recipe list */
+.recipe {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  color: var(--muted);
+}
+
+.recipe li {
+  margin-bottom: 0.45rem;
+}
+
+.recipe strong {
+  color: var(--text);
+}
+
+.lede.tight {
+  margin-bottom: 1.1rem;
+}
+
+.phase-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0.75rem 0 0;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  margin: 0 0.2rem;
+}
+
+.tag.odd {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+
+.tag.even {
+  background: var(--orange-dim);
+  color: var(--orange-soft);
+}
+
+/* Bit map */
+.bit-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 0.45rem;
+}
+
+.bit-cell {
+  text-align: center;
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}
+
+.bit-cell.on {
+  opacity: 1;
+}
+
+.bit-die {
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(155deg, #2c2c40, #171724);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.bit-arrow {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.bit-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: ui-monospace, Menlo, monospace;
+  line-height: 1.2;
+}
+
+.bit-val.zero {
+  color: var(--muted);
+}
+
+.bit-val.one {
+  color: var(--orange);
+}
+
+.bit-val.pop {
+  animation: revealPop 0.35s ease;
+}
+
+.bit-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+/* Calc */
+.calc-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  overflow: hidden;
+}
+
+.calc-rows {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.calc-row {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.4rem 0.45rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--muted);
+}
+
+.calc-row.dim {
+  opacity: 0.45;
+}
+
+.calc-row.active {
+  color: var(--text);
+}
+
+.calc-row.flash {
+  background: var(--orange-dim);
+  animation: revealPop 0.3s ease;
+}
+
+.cr-bit {
+  font-weight: 700;
+}
+
+.cr-sum {
+  font-weight: 700;
+  color: var(--orange-soft);
+}
+
+.calc-row.dim .cr-sum {
+  color: var(--muted);
+}
+
+.calc-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.65rem;
+  border-top: 1px solid var(--border);
+  font-weight: 700;
+}
+
+.calc-total span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calc-total strong {
+  font-size: 1.6rem;
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--orange);
+}
+
+.calc-total strong.pop {
+  animation: revealPop 0.4s ease;
+}
+
+/* Wordlist lookup */
+.list-chrome {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.list-chrome-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.list-target {
+  color: var(--orange-soft);
+  font-variant-numeric: tabular-nums;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.wordlist {
+  height: 252px;
+  overflow: hidden;
+  position: relative;
+}
+
+.wordlist::before,
+.wordlist::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 36px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wordlist::before {
+  top: 0;
+  background: linear-gradient(var(--card), transparent);
+}
+
+.wordlist::after {
+  bottom: 0;
+  background: linear-gradient(transparent, var(--card));
+}
+
+.wl-row {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 0.5rem;
+  padding: 0.48rem 0.9rem;
+  font-size: 0.95rem;
+  border-left: 3px solid transparent;
+  color: var(--muted);
+}
+
+.wl-num {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.wl-word {
+  font-weight: 600;
+}
+
+.wl-row.hit {
+  background: var(--orange-dim);
+  border-left-color: var(--orange);
+  color: var(--text);
+}
+
+.wl-row.hit .wl-word {
+  color: var(--orange);
+  font-weight: 800;
+}
+
+.wl-row.hit.land {
+  animation: landPulse 0.55s ease;
+}
+
+@keyframes landPulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.03);
+    box-shadow: inset 0 0 0 1px rgba(247, 147, 26, 0.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.word-found {
+  margin-top: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid rgba(247, 147, 26, 0.4);
+  border-radius: var(--radius);
+  animation: revealPop 0.45s ease;
+}
+
+.word-found-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.word-found-text {
+  margin: 0.2rem 0 0.15rem;
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.word-found-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+}
