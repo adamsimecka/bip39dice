@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 40" fill="none">
+  <!-- Die mark -->
+  <rect x="1" y="4" width="32" height="32" rx="7" fill="#1a1a2e" stroke="#f7931a" stroke-width="2"/>
+  <circle cx="11" cy="14" r="2.2" fill="#f4f4fb"/>
+  <circle cx="23" cy="14" r="2.2" fill="#f4f4fb"/>
+  <circle cx="17" cy="20" r="2.2" fill="#f7931a"/>
+  <circle cx="11" cy="26" r="2.2" fill="#f4f4fb"/>
+  <circle cx="23" cy="26" r="2.2" fill="#f4f4fb"/>
+  <!-- Wordmark -->
+  <text x="44" y="27" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700" fill="#f4f4fb" letter-spacing="-0.02em">bip39dice</text>
+  <text x="152" y="27" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="500" fill="#9a9ab8" letter-spacing="-0.02em">.com</text>
+</svg>
