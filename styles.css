@@ -1522,6 +1522,12 @@ a:hover {
   background: var(--paper-deep);
 }
 
+.demo-img.photo {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
 .demo-copy {
   display: grid;
   grid-template-columns: auto 1fr;
