@@ -253,9 +253,9 @@
           </div>
           <button type="button" class="btn-ghost mini" id="btn-reset-sheet">Reset</button>
         </div>
-        <p class="lede" id="lab-lede">Get a number 1–6 for this row.</p>
+        <p class="lede" id="lab-lede" hidden></p>
 
-        <!-- Always-visible worksheet -->
+        <!-- Compact focused worksheet (single row / summary) -->
         <div class="worksheet" id="worksheet" aria-label="Dice worksheet"></div>
 
         <!-- Context-sensitive action panel -->
@@ -265,20 +265,17 @@
 
         <p class="quiz-feedback" id="ws-feedback" hidden></p>
 
-        <!-- Word list (shown only when looking up) -->
+        <!-- Word list (shown only when looking up) — fills remaining viewport -->
         <div id="ws-list-panel" hidden>
           <div class="find-banner">
-            Your number is <strong id="find-index">—</strong> — find it and tap the word
+            Find <strong id="find-index">—</strong> · tap the word
           </div>
           <div class="list-chrome tall">
-            <div class="list-chrome-top">
-              <span>BIP-39 English · 2,048 words</span>
-            </div>
             <div class="list-tools">
               <input
                 type="search"
                 id="list-search"
-                placeholder="Search number or word (optional)"
+                placeholder="Search # or word"
                 autocomplete="off"
                 spellcheck="false"
               />

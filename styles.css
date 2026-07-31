@@ -1316,11 +1316,12 @@ a:hover {
 }
 
 #step-4 #ws-list-panel {
-  margin-top: 0.25rem;
-  flex: 1;
+  margin-top: 0.15rem;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 #step-4 #ws-list-panel .list-chrome.tall {
@@ -1328,111 +1329,195 @@ a:hover {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border-width: 2px;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+#step-4 #ws-list-panel .list-tools {
+  flex-shrink: 0;
+  padding: 0.35rem;
+}
+
+#step-4 #ws-list-panel .list-tools input {
+  padding: 0.45rem 0.55rem;
+  font-size: 0.88rem;
 }
 
 #step-4 #ws-list-panel .wordlist.full {
   height: auto;
+  flex: 1 1 auto;
+  min-height: 0;
   max-height: none;
-  flex: 1;
-  min-height: 160px;
-  max-height: min(40vh, 240px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 #step-4 .find-banner {
-  padding: 0.5rem 0.65rem;
-  font-size: 0.88rem;
-  margin-bottom: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+  flex-shrink: 0;
 }
 
 #step-4 .find-banner strong {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
 }
 
 #step-4 .word-found {
-  margin-top: 0.4rem;
-  padding: 0.55rem 0.65rem;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.55rem;
+  flex-shrink: 0;
 }
 
 #step-4 .word-found-text {
-  font-size: clamp(1.35rem, 6vw, 1.75rem);
+  font-size: clamp(1.25rem, 5.5vw, 1.6rem);
 }
 
 #step-4 .quiz-card.compact {
-  padding: 0.65rem 0.55rem;
+  padding: 0.5rem 0.5rem;
+}
+
+#step-4 .quiz-card.compact.flat {
+  padding: 0.45rem 0.5rem;
+}
+
+#step-4 .quiz-flat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: left;
+  margin-bottom: 0.4rem;
 }
 
 #step-4 .quiz-card.compact .quiz-die {
-  width: 56px;
-  height: 56px;
-  font-size: 1.6rem;
-  margin-bottom: 0.45rem;
+  width: 44px;
+  height: 44px;
+  font-size: 1.35rem;
+  margin: 0;
+  flex-shrink: 0;
+  border-width: 2px;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+#step-4 .quiz-flat-row .phase-note {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.3;
 }
 
 #step-4 .quiz-actions {
-  margin-top: 0.45rem;
+  margin-top: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
 }
 
 #step-4 .quiz-btn {
-  padding: 0.65rem 0.4rem;
-  font-size: 0.88rem;
+  padding: 0.55rem 0.35rem;
+  font-size: 0.85rem;
 }
 
 #step-4 .phase-note {
-  margin: 0.35rem 0 0;
+  margin: 0.25rem 0 0;
   font-size: 0.82rem;
 }
 
 #step-4 .phase-note.tight {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.25rem;
 }
 
 #step-4 .sum-hint.compact {
-  padding: 0.55rem 0.6rem;
-  margin-bottom: 0.45rem;
+  padding: 0.4rem 0.5rem;
+  margin-bottom: 0.35rem;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+#step-4 .sum-hint.compact .chip {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.4rem;
 }
 
 #step-4 .answer-form {
-  margin-top: 0.35rem;
-  gap: 0.4rem;
+  margin-top: 0;
+  gap: 0.35rem;
+}
+
+#step-4 .answer-form.inline {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+#step-4 .answer-form.inline .btn-primary {
+  width: auto;
+  padding: 0.55rem 0.85rem;
+  white-space: nowrap;
 }
 
 #step-4 .answer-form input {
-  font-size: 1.1rem;
-  padding: 0.6rem;
+  font-size: 1rem;
+  padding: 0.5rem 0.55rem;
 }
 
 #step-4 .nav-row {
-  margin-top: 0.45rem;
+  margin-top: 0.25rem;
 }
 
 #step-4 .mode-row {
-  margin-bottom: 0.45rem;
-}
-
-#step-4 .face-pad {
   margin-bottom: 0.35rem;
 }
 
+#step-4 .mode-row.slim {
+  gap: 0.3rem;
+  margin-bottom: 0.35rem;
+}
+
+#step-4 .mode-row.slim .mode-btn {
+  padding: 0.4rem 0.35rem;
+  font-size: 0.8rem;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+#step-4 .face-pad {
+  margin-bottom: 0;
+}
+
+#step-4 .face-pad.slim {
+  gap: 0.3rem;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+#step-4 .face-pad.slim button {
+  padding: 0.45rem 0.15rem;
+  font-size: 1rem;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
 #step-4 .face-pad button {
-  padding: 0.5rem;
-  font-size: 1.1rem;
+  padding: 0.45rem;
+  font-size: 1.05rem;
 }
 
-/* Prefer fitting step 4 actions without page scroll when possible */
-@media (min-height: 700px) {
-  #step-4 #ws-list-panel .wordlist.full {
-    max-height: min(46vh, 320px);
-  }
+#step-4 .btn-primary {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.95rem;
 }
 
+/* Short viewports: even denser */
 @media (max-height: 720px) {
   #step-4 .ws-row {
-    padding: 0.26rem 0.35rem;
+    padding: 0.22rem 0.35rem;
+  }
+
+  #step-4 h1 {
+    font-size: 1.15rem;
   }
 
   #step-4 #ws-list-panel .wordlist.full {
-    max-height: min(32vh, 200px);
-    min-height: 120px;
+    min-height: 100px;
   }
 }
 
@@ -1497,28 +1582,80 @@ a:hover {
   box-shadow: 1px 1px 0 var(--ink);
 }
 
-/* Step 4 lab layout — keep action + sheet in view */
+/* ——— Step 4 lab: fit the phone viewport; only wordlist scrolls ——— */
+body.lab-step {
+  overflow: hidden;
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+body.lab-step .top {
+  flex-shrink: 0;
+}
+
+body.lab-step .stage {
+  padding-top: 0.4rem;
+  padding-bottom: 0.5rem;
+  /* header is ~57px; use flexible remaining height */
+  height: calc(100dvh - 57px);
+  max-height: calc(100dvh - 57px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
 #step-4 {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  /* leave room for browser chrome on mobile */
-  max-height: none;
+  gap: 0.3rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 #step-4 .ws-header {
   margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+#step-4 .ws-header h1 {
+  font-size: clamp(1.15rem, 4.5vw, 1.4rem);
+  margin: 0;
+  line-height: 1.15;
+}
+
+#step-4 .step-kicker {
+  margin: 0 0 0.1rem;
+  font-size: 0.68rem;
 }
 
 #step-4 .lede[hidden] {
   display: none !important;
 }
 
+#step-4 .ws-action {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+#step-4 .quiz-feedback {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+#step-4 .nav-row {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
 .worksheet {
   background: var(--cream);
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
-  margin: 0.35rem 0 0.45rem;
+  margin: 0;
   font-size: 0.72rem;
   max-width: 100%;
   overflow-x: auto;
@@ -1526,9 +1663,62 @@ a:hover {
   flex-shrink: 0;
 }
 
-.worksheet.compact {
-  margin: 0.25rem 0 0.4rem;
+.worksheet.focus {
   box-shadow: 1px 1px 0 var(--ink);
+}
+
+.worksheet.compact {
+  margin: 0;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.worksheet.compact.mini {
+  border-width: 1.5px;
+}
+
+/* Progress dots + single active row */
+.ws-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem 0.25rem;
+  background: var(--paper-deep);
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.ws-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(28, 25, 21, 0.15);
+  border: 1px solid rgba(28, 25, 21, 0.2);
+}
+
+.ws-dot.done {
+  background: var(--felt);
+  border-color: var(--felt);
+}
+
+.ws-dot.on {
+  background: var(--brick);
+  border-color: var(--brick);
+  box-shadow: 0 0 0 2px rgba(194, 59, 34, 0.25);
+}
+
+.ws-progress-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .ws-summary {
@@ -1536,6 +1726,11 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+}
+
+.ws-summary.mini {
+  padding: 0.35rem 0.5rem;
+  gap: 0.15rem;
 }
 
 .ws-summary-line {
@@ -1548,6 +1743,10 @@ a:hover {
   color: var(--muted);
 }
 
+.ws-summary.mini .ws-summary-line {
+  font-size: 0.65rem;
+}
+
 .ws-summary-line strong {
   color: var(--ink);
   font-weight: 700;
@@ -1556,9 +1755,17 @@ a:hover {
   font-size: 0.75rem;
 }
 
+.ws-summary.mini .ws-summary-line strong {
+  font-size: 0.68rem;
+}
+
 .ws-summary-line.eq strong {
   color: var(--brick);
   font-size: 0.82rem;
+}
+
+.ws-summary.mini .ws-summary-line.eq strong {
+  font-size: 0.72rem;
 }
 
 .ws-row.ws-more {
