@@ -2096,16 +2096,21 @@ button.linkish:hover {
   margin: 0 0 1rem;
 }
 
+.path-tabs-4 {
+  grid-template-columns: 1fr 1fr;
+}
+
 .path-tab {
   appearance: none;
   border: 2px solid var(--ink);
   background: var(--cream);
   font-family: var(--font);
   font-weight: 700;
-  font-size: 0.9rem;
-  padding: 0.7rem 0.5rem;
+  font-size: 0.82rem;
+  padding: 0.6rem 0.35rem;
   cursor: pointer;
   box-shadow: 2px 2px 0 var(--ink);
+  min-width: 0;
 }
 
 .path-tab.active {

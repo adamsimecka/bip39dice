@@ -141,8 +141,7 @@
           </div>
         </div>
         <p class="lede tight">
-          You’ll choose a real-world path at the end (paper, Coldcard, or another
-          device that accepts dice entropy).
+          At the end you’ll pick a path: paper, Coldcard, SeedSigner, or Jade.
         </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
@@ -289,8 +288,8 @@
 
         <p class="lede tight">
           How you generate the full seed depends on your setup. Next you’ll see a
-          practice 12-word example, then real-world options (paper, Coldcard, and
-          more).
+          practice 12-word example, then real-world paths: paper, Coldcard,
+          SeedSigner, or Jade.
         </p>
 
         <div class="nav-row">
@@ -326,12 +325,18 @@
           Pick a path that fits your setup.
         </p>
 
-        <div class="path-tabs" role="tablist" aria-label="Real-world paths">
+        <div class="path-tabs path-tabs-4" role="tablist" aria-label="Real-world paths">
           <button type="button" class="path-tab active" data-path="paper" role="tab" aria-selected="true">
             Paper
           </button>
           <button type="button" class="path-tab" data-path="coldcard" role="tab" aria-selected="false">
             Coldcard
+          </button>
+          <button type="button" class="path-tab" data-path="seedsigner" role="tab" aria-selected="false">
+            SeedSigner
+          </button>
+          <button type="button" class="path-tab" data-path="jade" role="tab" aria-selected="false">
+            Jade
           </button>
         </div>
 
@@ -484,13 +489,181 @@
           </div>
         </div>
 
+        <!-- SeedSigner path -->
+        <div class="path-panel" id="path-seedsigner" role="tabpanel" hidden>
+          <h2 class="path-heading">SeedSigner dice seed</h2>
+          <p class="lede tight">
+            SeedSigner is an air-gapped signing device (often DIY). It can turn
+            fair d6 rolls into a full BIP-39 seed, or help finish a paper seed
+            by calculating the last checksum word. Menu labels vary slightly by
+            firmware — look for <strong>New seed</strong> with a dice icon.
+          </p>
+
+          <h3 class="subhead">Before you start</h3>
+          <ul class="real-steps bullets-plain">
+            <li>SeedSigner offline (no Wi‑Fi dongle, camera covered when idle).</li>
+            <li>Fair six-sided dice and pen/paper (or metal) for the backup.</li>
+            <li>
+              Plan rolls:
+              <strong>50</strong> for a 12-word seed,
+              <strong>99</strong> for 24-word (SeedSigner’s counts).
+            </li>
+            <li>
+              Remember: SeedSigner is usually <strong>stateless</strong> — the
+              seed lives in RAM until you power off. Write the words down before
+              you unplug.
+            </li>
+          </ul>
+
+          <h3 class="subhead">Create a seed from dice</h3>
+          <ol class="real-steps">
+            <li>Power on SeedSigner.</li>
+            <li>
+              Open
+              <strong>Seeds → Create a seed</strong>
+              (or <strong>Tools → New seed</strong> on older builds) and choose
+              the <strong>dice</strong> option.
+            </li>
+            <li>
+              Pick
+              <strong>12 words (50 rolls)</strong>
+              or
+              <strong>24 words (99 rolls)</strong>.
+            </li>
+            <li>
+              Roll a physical die. On the SeedSigner screen, select
+              <strong>1–6</strong> for each roll. Repeat until the count is done.
+            </li>
+            <li>
+              SeedSigner shows the BIP-39 words. <strong>Write every word</strong>
+              carefully, then confirm the backup if the device asks.
+            </li>
+            <li>
+              Export a watch-only wallet (QR) to your coordinator. Verify a receive
+              address on the SeedSigner screen before funding.
+            </li>
+          </ol>
+
+          <h3 class="subhead">Paper method helper (checksum word)</h3>
+          <p class="lede tight">
+            If you made words 1–11 (or 1–23) on paper with the method in this
+            tutorial, SeedSigner can also compute the final checksum word from
+            those words — useful instead of an offline PC +
+            <code>24thword.py</code>.
+          </p>
+
+          <h3 class="subhead">After the seed exists</h3>
+          <ol class="real-steps">
+            <li>Keep the written backup private; SeedSigner will forget the seed when powered down.</li>
+            <li>Send a small test amount; confirm it arrives.</li>
+            <li>Only then move larger amounts.</li>
+          </ol>
+
+          <div class="link-stack">
+            <a href="https://seedsigner.com/" target="_blank" rel="noopener"
+              >seedsigner.com ↗</a
+            >
+            <a
+              href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/dice_verification.md"
+              target="_blank"
+              rel="noopener"
+              >Dice verification notes ↗</a
+            >
+          </div>
+        </div>
+
+        <!-- Blockstream Jade path -->
+        <div class="path-panel" id="path-jade" role="tabpanel" hidden>
+          <h2 class="path-heading">Blockstream Jade dice seed</h2>
+          <p class="lede tight">
+            Jade can build a BIP-39 mnemonic from physical dice so you don’t rely
+            only on the device RNG. Exact menu text can change with firmware;
+            look for <strong>Generate</strong> / <strong>mnemonic</strong> and a
+            <strong>dice</strong> option.
+          </p>
+
+          <h3 class="subhead">Before you start</h3>
+          <ul class="real-steps bullets-plain">
+            <li>Jade unlocked (PIN) and on current firmware if you can update safely.</li>
+            <li>Fair six-sided dice and a private place to write the backup.</li>
+            <li>
+              Follow on-screen roll counts (Jade will ask for enough entropy for
+              12- or 24-word seeds).
+            </li>
+            <li>
+              Jade is often used with <strong>Blockstream Green</strong> as a
+              watch-only / coordinator app — plan that setup after the seed exists.
+            </li>
+          </ul>
+
+          <h3 class="subhead">Create the seed with dice</h3>
+          <ol class="real-steps">
+            <li>Power on Jade and enter your PIN.</li>
+            <li>
+              Choose to
+              <strong>generate a new mnemonic / recovery phrase</strong>
+              (wording varies by firmware).
+            </li>
+            <li>
+              Select the
+              <strong>dice</strong>
+              (or “use dice”) entropy option when offered — not only “device RNG”
+              if you want dice-sourced entropy.
+            </li>
+            <li>
+              Roll a physical die. Enter each face
+              <strong>1–6</strong>
+              on Jade. Continue until the device says you have enough rolls.
+            </li>
+            <li>
+              Jade shows the BIP-39 words.
+              <strong>Write every word down</strong>
+              (metal or paper). Confirm the backup on-device if prompted.
+            </li>
+            <li>
+              Pair or connect to Blockstream Green (or another supported
+              coordinator), export/watch-only as guided, and verify a receive
+              address on the Jade screen.
+            </li>
+          </ol>
+
+          <h3 class="subhead">After the seed exists</h3>
+          <ol class="real-steps">
+            <li>Store the written backup offline and private.</li>
+            <li>Send a small test amount; confirm it on Jade.</li>
+            <li>Only then move larger amounts.</li>
+          </ol>
+
+          <div class="callout-box">
+            <strong>Note</strong>
+            <p>
+              Menu paths differ between Jade Classic, Jade Plus, and firmware
+              versions. If you don’t see a dice option, check Blockstream’s current
+              docs or update firmware from a trusted source before generating a
+              funded seed.
+            </p>
+          </div>
+
+          <div class="link-stack">
+            <a href="https://blockstream.com/jade/" target="_blank" rel="noopener"
+              >Blockstream Jade ↗</a
+            >
+            <a
+              href="https://help.blockstream.com/hc/en-us/categories/900000061906-Blockstream-Jade"
+              target="_blank"
+              rel="noopener"
+              >Jade help center ↗</a
+            >
+          </div>
+        </div>
+
         <p class="credit" style="margin-top: 1.25rem">
           Method taught in this tutorial follows
           <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
             >veebch/Bip39-Dice</a
           >
           (paper calculator + checksum tools). Not affiliated with Coinkite /
-          COLDCARD.
+          COLDCARD, SeedSigner, or Blockstream / Jade.
         </p>
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>

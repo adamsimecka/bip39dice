@@ -545,23 +545,20 @@ async function generatePractice(totalWords = 12) {
 $('#btn-gen-seed')?.addEventListener('click', () => generatePractice(12));
 $('#btn-gen-again')?.addEventListener('click', () => generatePractice(12));
 
-// Real-world path tabs (paper vs Coldcard)
+// Real-world path tabs (paper / Coldcard / SeedSigner / Jade)
 function showPath(name) {
   $$('.path-tab').forEach((t) => {
     const on = t.dataset.path === name;
     t.classList.toggle('active', on);
     t.setAttribute('aria-selected', on ? 'true' : 'false');
   });
-  const paper = $('#path-paper');
-  const cold = $('#path-coldcard');
-  if (paper) {
-    paper.hidden = name !== 'paper';
-    paper.classList.toggle('active', name === 'paper');
-  }
-  if (cold) {
-    cold.hidden = name !== 'coldcard';
-    cold.classList.toggle('active', name === 'coldcard');
-  }
+  $$('.path-panel').forEach((panel) => {
+    const id = panel.id || '';
+    const key = id.replace(/^path-/, '');
+    const on = key === name;
+    panel.hidden = !on;
+    panel.classList.toggle('active', on);
+  });
 }
 
 $$('.path-tab').forEach((tab) => {
