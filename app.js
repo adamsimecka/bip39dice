@@ -208,16 +208,16 @@ function updateLabChrome() {
       if (title) title.textContent = 'Roll the die';
       if (lede) lede.textContent = 'One die is enough. Roll it (or tap 1–6 from a real die).';
     } else if (userBits[activeRow] == null) {
-      if (title) title.textContent = 'Odd or even?';
+      if (title) title.textContent = 'Even or odd?';
       if (lede)
-        lede.textContent = `You rolled ${faces[activeRow]}. Odd → 0 · Even → 1. Pick the correct one.`;
+        lede.textContent = `You rolled ${faces[activeRow]}. Even = count this row’s weight. Odd = skip (add 0).`;
     }
   } else if (sheetStage === 'sum') {
     if (kicker) kicker.textContent = 'Almost there';
-    if (title) title.textContent = 'Calculate the number';
+    if (title) title.textContent = 'Add the even rolls';
     if (lede)
       lede.textContent =
-        'Each row is bit × power. Add every product, then type the total.';
+        'Even → add that row’s weight. Odd → add 0. Type the sum.';
   } else if (sheetStage === 'word') {
     if (kicker) kicker.textContent = 'Last step';
     if (title) title.textContent = 'Find your word';
@@ -231,26 +231,32 @@ function updateLabChrome() {
   }
 }
 
-function rowEquation(bit, power) {
+/** Human-readable add for a row: +weight if even, +0 if odd */
+function rowAddLabel(bit, weight) {
   if (bit == null) return '—';
-  return `${bit}×${power}`;
+  if (bit === 1) return `+${weight}`;
+  return '+0';
 }
 
-function rowProduct(bit, power) {
-  if (bit == null) return '—';
-  return bit * power;
-}
-
-/** Full sum equation string, e.g. 1×1 + 0×2 + 1×4 = 5 */
+/** Equation showing only what you add, e.g. 1 + 0 + 4 + 0 + 16 = 21 */
 function buildSumEquation(revealTotal) {
-  const parts = userBits.map((bit, i) => {
-    if (bit == null) return null;
-    return `${bit}×${POWERS[i]}`;
-  });
-  if (parts.some((p) => p == null)) return null;
+  if (userBits.some((b) => b == null)) return null;
+  const parts = userBits.map((bit, i) => (bit === 1 ? String(POWERS[i]) : '0'));
   const left = parts.join(' + ');
   const right = revealTotal && correctIndex != null ? String(correctIndex) : '?';
   return `${left} = ${right}`;
+}
+
+/** Friendly line: +1 (even) +4 (even) +16 (even) = … */
+function buildFriendlyAddends(revealTotal) {
+  if (userBits.some((b) => b == null)) return null;
+  const kept = [];
+  userBits.forEach((bit, i) => {
+    if (bit === 1) kept.push(`+${POWERS[i]}`);
+  });
+  const left = kept.length ? kept.join(' ') : '+0';
+  const right = revealTotal && correctIndex != null ? String(correctIndex) : '?';
+  return `${left}  =  ${right}`;
 }
 
 function renderWorksheet() {
@@ -258,32 +264,38 @@ function renderWorksheet() {
   if (!el) return;
   const head = `
     <div class="ws-row ws-head">
-      <span>#</span><span>Roll</span><span>Bit</span><span>Equation</span><span>=</span>
+      <span>#</span><span>Roll</span><span>Even?</span><span>Weight</span><span>Add</span>
     </div>`;
   const rows = faces
     .map((face, i) => {
       const bit = userBits[i];
-      const power = POWERS[i];
-      const eq = rowEquation(bit, power);
-      const prod = rowProduct(bit, power);
+      const weight = POWERS[i];
+      const evenLabel =
+        face == null ? '—' : bit == null ? '?' : bit === 1 ? 'yes' : 'no';
+      const add = rowAddLabel(bit, weight);
       const isActive = sheetStage === 'row' && i === activeRow;
       const isDone = face != null && bit != null;
-      return `<div class="ws-row ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}" data-row="${i}">
+      const keep = bit === 1;
+      return `<div class="ws-row ${isActive ? 'active' : ''} ${isDone ? 'done' : ''} ${
+        keep ? 'keep' : ''
+      }" data-row="${i}">
         <span class="ws-n">${i + 1}</span>
         <span class="ws-face">${face ?? '·'}</span>
-        <span class="ws-bit ${bit === 1 ? 'one' : bit === 0 ? 'zero' : ''}">${
-          bit == null ? '·' : bit
-        }</span>
-        <span class="ws-eq">${eq}</span>
-        <span class="ws-add">${prod}</span>
+        <span class="ws-oe ${bit === 1 ? 'yes' : bit === 0 ? 'no' : ''}">${evenLabel}</span>
+        <span class="ws-pow">${weight}</span>
+        <span class="ws-add ${keep ? 'keep-add' : ''}">${add}</span>
       </div>`;
     })
     .join('');
 
   let foot = '';
   if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
-    const eq = buildSumEquation(sumChecked);
-    foot = `<div class="ws-equation" id="ws-equation">${eq || ''}</div>`;
+    const friendly = buildFriendlyAddends(sumChecked);
+    const full = buildSumEquation(sumChecked);
+    foot = `<div class="ws-equation" id="ws-equation">
+      <div class="ws-eq-main">${friendly || ''}</div>
+      <div class="ws-eq-detail">${full || ''}</div>
+    </div>`;
   }
   el.innerHTML = head + rows + foot;
 }
@@ -323,25 +335,37 @@ function renderActionPanel() {
       wireRollControls();
     } else {
       // Need odd/even
+      const weight = POWERS[activeRow];
       panel.innerHTML = `
         <div class="quiz-card compact">
           <div class="quiz-die" id="bit-quiz-die">${face}</div>
-          <p class="phase-note">Is ${face} odd or even?</p>
+          <p class="phase-note">
+            Row ${activeRow + 1} weight is <strong>${weight}</strong>.<br/>
+            Even → add ${weight}. Odd → add 0.
+          </p>
           <div class="quiz-actions">
-            <button type="button" class="quiz-btn" id="btn-odd">Odd → <strong>0</strong></button>
-            <button type="button" class="quiz-btn" id="btn-even">Even → <strong>1</strong></button>
+            <button type="button" class="quiz-btn" id="btn-odd">Odd → <strong>skip</strong></button>
+            <button type="button" class="quiz-btn" id="btn-even">Even → <strong>+${weight}</strong></button>
           </div>
         </div>`;
       $('#btn-odd')?.addEventListener('click', () => answerBit(0));
       $('#btn-even')?.addEventListener('click', () => answerBit(1));
     }
   } else if (sheetStage === 'sum') {
-    const eq = buildSumEquation(false);
+    const friendly = buildFriendlyAddends(false);
+    const kept = userBits
+      .map((b, i) => (b === 1 ? POWERS[i] : null))
+      .filter((x) => x != null);
     panel.innerHTML = `
       <div class="sum-hint">
-        <p class="sum-label">Full equation</p>
-        <p class="sum-equation" id="sum-equation-live">${eq}</p>
-        <p class="sum-hint-note">Add the products on the right (or expand each bit×power). Type the number after =</p>
+        <p class="sum-label">What to add (even rolls only)</p>
+        <p class="sum-chips">${
+          kept.length
+            ? kept.map((n) => `<span class="chip">+${n}</span>`).join('')
+            : '<span class="chip">+0</span> <span class="sum-hint-note">no even rolls</span>'
+        }</p>
+        <p class="sum-equation" id="sum-equation-live">${friendly}</p>
+        <p class="sum-hint-note">Add those weights. Odds already count as zero.</p>
       </div>
       <form class="answer-form" id="sum-form">
         <label class="sr-only" for="sum-input">Total</label>
@@ -354,11 +378,11 @@ function renderActionPanel() {
     panel.innerHTML = `
       <p class="phase-note">Type <strong>${correctIndex}</strong> in the search box below, then tap that word on the list.</p>`;
   } else if (sheetStage === 'done') {
-    const eq = buildSumEquation(true);
+    const friendly = buildFriendlyAddends(true);
     panel.innerHTML = `
       <div class="sum-hint done-eq">
-        <p class="sum-label">Your equation</p>
-        <p class="sum-equation">${eq}</p>
+        <p class="sum-label">Even rolls added up to</p>
+        <p class="sum-equation">${friendly}</p>
       </div>`;
   } else {
     panel.innerHTML = '';
@@ -404,8 +428,8 @@ function answerBit(chosenBit) {
       fb.className = 'quiz-feedback bad';
       fb.textContent =
         correct === 0
-          ? `${face} is odd → bit 0. Try again.`
-          : `${face} is even → bit 1. Try again.`;
+          ? `${face} is odd → skip this row (add 0). Try again.`
+          : `${face} is even → add the weight ${POWERS[activeRow]}. Try again.`;
     }
     return;
   }
@@ -433,7 +457,7 @@ function onSumSubmit(e) {
     if (fb) {
       fb.hidden = false;
       fb.className = 'quiz-feedback bad';
-      fb.textContent = 'Not that total. Add every power where Bit is 1.';
+      fb.textContent = 'Not that total. Add only the weights from even rolls.';
     }
     return;
   }

@@ -1289,13 +1289,17 @@ a:hover {
 
 .ws-row {
   display: grid;
-  grid-template-columns: 1.5rem 2rem 1.6rem minmax(4rem, 1fr) 2.2rem;
+  grid-template-columns: 1.4rem 2rem 2.4rem 2.6rem 1fr;
   gap: 0.2rem;
   align-items: center;
   padding: 0.4rem 0.5rem;
   border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   color: var(--muted);
+}
+
+.ws-row.keep {
+  background: rgba(194, 59, 34, 0.06);
 }
 
 .ws-row:last-child {
@@ -1343,14 +1347,13 @@ a:hover {
   color: var(--muted);
 }
 
-.ws-eq {
-  font-weight: 600;
-  font-size: 0.78rem;
-  color: var(--ink-soft);
+.ws-oe.yes {
+  color: var(--felt);
+  font-weight: 700;
 }
 
-.ws-row.done .ws-eq {
-  color: var(--ink);
+.ws-oe.no {
+  color: var(--muted);
 }
 
 .ws-add {
@@ -1358,16 +1361,31 @@ a:hover {
   text-align: right;
 }
 
+.ws-add.keep-add {
+  color: var(--brick);
+}
+
 .ws-equation {
   padding: 0.75rem 0.65rem;
   border-top: 2px solid var(--ink);
   background: var(--paper-deep);
   font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 600;
   line-height: 1.45;
   color: var(--ink);
   word-break: break-word;
+}
+
+.ws-eq-main {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brick);
+  margin-bottom: 0.35rem;
+}
+
+.ws-eq-detail {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .sum-label {

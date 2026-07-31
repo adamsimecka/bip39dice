@@ -1,24 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" fill="none">
   <rect width="320" height="180" fill="#f3ead7"/>
   <!-- notepad -->
-  <rect x="20" y="16" width="280" height="148" rx="4" fill="#fffaf0" stroke="#1c1915" stroke-width="2.5"/>
-  <!-- ruled lines -->
-  <g stroke="#2f5d4a" stroke-opacity="0.15" stroke-width="1">
-    <line x1="36" y1="48" x2="284" y2="48"/>
-    <line x1="36" y1="72" x2="284" y2="72"/>
-    <line x1="36" y1="96" x2="284" y2="96"/>
-    <line x1="36" y1="120" x2="284" y2="120"/>
-    <line x1="36" y1="144" x2="284" y2="144"/>
-  </g>
-  <text x="36" y="40" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1c1915">bit × power</text>
-  <text x="36" y="66" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#1c1915">1 × 1</text>
-  <text x="200" y="66" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#c23b22">= 1</text>
-  <text x="36" y="90" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#6b645a">0 × 2</text>
-  <text x="200" y="90" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#6b645a">= 0</text>
-  <text x="36" y="114" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#1c1915">1 × 4</text>
-  <text x="200" y="114" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#c23b22">= 4</text>
-  <text x="36" y="138" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#1c1915">… + 1×512 + 0×1024</text>
-  <!-- total bar -->
-  <rect x="20" y="152" width="280" height="28" fill="#1c1915"/>
-  <text x="36" y="171" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#fffaf0">1×1 + 0×2 + 1×4 + …  =  517</text>
+  <rect x="16" y="12" width="288" height="156" rx="4" fill="#fffaf0" stroke="#1c1915" stroke-width="2.5"/>
+
+  <!-- header -->
+  <text x="28" y="36" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#6b645a">ROLL</text>
+  <text x="100" y="36" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#6b645a">EVEN?</text>
+  <text x="180" y="36" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#6b645a">WEIGHT</text>
+  <text x="250" y="36" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#6b645a">ADD</text>
+  <line x1="28" y1="44" x2="292" y2="44" stroke="#1c1915" stroke-width="1.5"/>
+
+  <!-- row: even, add weight -->
+  <text x="28" y="68" font-family="Georgia, serif" font-size="16" fill="#1c1915">4</text>
+  <text x="100" y="68" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#2f5d4a">yes</text>
+  <text x="180" y="68" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#1c1915">1</text>
+  <text x="250" y="68" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#c23b22">+1</text>
+
+  <!-- row: odd, skip -->
+  <text x="28" y="96" font-family="Georgia, serif" font-size="16" fill="#1c1915">3</text>
+  <text x="100" y="96" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#6b645a">no</text>
+  <text x="180" y="96" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#1c1915">2</text>
+  <text x="250" y="96" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#6b645a">+0</text>
+
+  <!-- row: even -->
+  <text x="28" y="124" font-family="Georgia, serif" font-size="16" fill="#1c1915">6</text>
+  <text x="100" y="124" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#2f5d4a">yes</text>
+  <text x="180" y="124" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#1c1915">4</text>
+  <text x="250" y="124" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="#c23b22">+4</text>
+
+  <line x1="28" y1="138" x2="292" y2="138" stroke="#1c1915" stroke-width="2"/>
+  <text x="28" y="158" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#1c1915">only evens count</text>
+  <text x="230" y="158" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="700" fill="#c23b22">= 5</text>
 </svg>
