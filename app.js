@@ -83,8 +83,8 @@ function goTo(n) {
 }
 
 document.addEventListener('click', (e) => {
+  // Lab uses its own #lab-next / #lab-back handlers
   if (e.target.closest('#lab-next') || e.target.closest('#lab-back')) return;
-  if (e.target.closest('#step-4')) return; // lab has its own controls
   if (e.target.closest('[data-next]')) goTo(step + 1);
   if (e.target.closest('[data-back]')) goTo(step - 1);
 });
@@ -256,18 +256,6 @@ function renderDieTray() {
       }
     });
   });
-}
-
-function updateRollProgress() {
-  const n = filledCount();
-  $('#roll-progress').textContent = `${n} of 11 rolls`;
-  $('#btn-clear-rolls').hidden = n === 0;
-  $('#btn-roll-one').disabled = allFilled();
-  $('#btn-roll-one').textContent = allFilled() ? 'All 11 filled' : `Roll die #${n + 1}`;
-  if (labPhase === 0) {
-    $('#lab-nav').hidden = !allFilled();
-    $('#lab-hint').hidden = allFilled();
-  }
 }
 
 async function setFace(index, face, animate = false) {
