@@ -3,19 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BIP-39 Dice · Make a Bitcoin seed word with dice</title>
+    <title>BIP-39 Dice · Learn how dice make a Bitcoin seed</title>
     <meta
       name="description"
-      content="Simple demo: roll dice, get a Bitcoin seed word. Learn the offline dice method. Practice only — never fund a seed from a website."
+      content="A short guided tutorial: roll dice, see a Bitcoin seed word appear. Practice only — never fund a seed from a website."
     />
     <meta name="theme-color" content="#07070f" />
     <link rel="canonical" href="https://bip39dice.com/" />
-    <meta property="og:url" content="https://bip39dice.com/" />
-    <meta property="og:title" content="BIP-39 Dice" />
-    <meta
-      property="og:description"
-      content="Roll dice → get a Bitcoin seed word. Simple practice lab."
-    />
+    <meta property="og:title" content="BIP-39 Dice · Guided tutorial" />
+    <meta property="og:description" content="Roll dice → get a Bitcoin seed word. Simple step-by-step tutorial." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -27,148 +23,264 @@
   </head>
   <body>
     <header class="top">
-      <a class="logo" href="/">
+      <a class="logo" href="/" onclick="location.reload(); return false;">
         <img src="logo.svg" alt="bip39dice.com" />
       </a>
-      <a
-        class="gh"
-        href="https://github.com/adamsimecka/bip39dice"
-        target="_blank"
-        rel="noopener"
-        >GitHub</a
-      >
+      <div class="progress-wrap" id="progress-wrap" hidden>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">1 / 6</span>
+      </div>
+      <a class="gh" href="https://github.com/adamsimecka/bip39dice" target="_blank" rel="noopener">GitHub</a>
     </header>
 
-    <main class="wrap">
-      <!-- Intro -->
-      <section class="block intro">
-        <p class="eyebrow">Practice only · not a real wallet</p>
-        <h1>How dice make a Bitcoin seed word</h1>
-        <p class="lede">
-          A Bitcoin seed is a list of secret words. Each word comes from rolling
-          dice. Try it once — takes a few seconds.
-        </p>
-      </section>
-
-      <!-- The one interactive thing -->
-      <section class="block card" id="try">
-        <h2>1. Make one word</h2>
-        <p class="sub">
-          Click the button. We roll 11 dice and turn them into one word from the
-          official Bitcoin word list.
-        </p>
-
-        <div class="die-row" id="die-row" aria-hidden="true"></div>
-
-        <button type="button" class="btn-big" id="btn-roll">
-          Roll the dice
-        </button>
-
-        <div class="result" id="result" hidden>
-          <p class="result-label">Your practice word</p>
-          <p class="result-word" id="result-word">—</p>
-          <p class="result-meta" id="result-meta"></p>
-          <button type="button" class="linkish" id="btn-show-math">
-            Show the simple math
-          </button>
-          <div class="math" id="math" hidden>
-            <ol>
-              <li>Odd numbers → 0 · Even numbers → 1</li>
-              <li>Those bits make a number from 0 to 2047</li>
-              <li>That number picks a word on the BIP-39 list</li>
-            </ol>
-            <p class="mono" id="math-detail"></p>
+    <main class="stage" id="stage">
+      <!-- ===== STEP 0: Welcome ===== -->
+      <section class="step active" data-step="0" id="step-0">
+        <div class="visual" aria-hidden="true">
+          <div class="hero-art">
+            <div class="float-die d1">⚀</div>
+            <div class="float-die d2">⚃</div>
+            <div class="float-die d3">⚅</div>
+            <div class="hero-card">
+              <span class="hero-card-label">seed words</span>
+              <div class="hero-pills">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span class="accent"></span>
+              </div>
+            </div>
           </div>
         </div>
+        <p class="badge">Practice only · ~2 minutes</p>
+        <h1>How dice make a Bitcoin seed</h1>
+        <p class="lede">
+          Your wallet’s secret is 12 words. You’ll see how one word comes from
+          dice — then how all 12 fit together.
+        </p>
+        <button type="button" class="btn-primary" data-next>Start the tutorial</button>
       </section>
 
-      <!-- The big picture -->
-      <section class="block card">
-        <h2>2. A full seed needs 12 words</h2>
-        <ol class="simple-steps">
-          <li>
-            <strong>Words 1–11</strong> — roll dice like above (for real: use
-            paper and physical dice).
-          </li>
-          <li>
-            <strong>Word 12</strong> — calculated from the first 11 (a checksum).
-            Offline tools list the valid choices.
-          </li>
-        </ol>
-        <p class="sub">
-          That’s it. 12 secret words = your wallet. Lose them and the bitcoin is
-          gone. Share them and someone can steal it.
+      <!-- ===== STEP 1: What is a seed ===== -->
+      <section class="step" data-step="1" id="step-1" hidden>
+        <div class="visual" aria-hidden="true">
+          <div class="seed-preview" id="seed-preview">
+            <!-- filled by JS -->
+          </div>
+        </div>
+        <h1>A seed is 12 secret words</h1>
+        <p class="lede">
+          Anyone who has these words controls the bitcoin. Anyone who loses them
+          loses the bitcoin. No customer support. No reset button.
         </p>
+        <ul class="bullets">
+          <li>Words come from a fixed list of 2,048</li>
+          <li>Most people use <strong>12 words</strong></li>
+          <li>They must stay offline and private</li>
+        </ul>
+        <div class="nav-row">
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-primary" data-next>Got it — next</button>
+        </div>
+      </section>
 
-        <button type="button" class="btn-secondary" id="btn-practice-full">
-          Practice a full 12-word seed
-        </button>
+      <!-- ===== STEP 2: Pipeline concept ===== -->
+      <section class="step" data-step="2" id="step-2" hidden>
+        <div class="visual" aria-hidden="true">
+          <div class="pipeline" id="pipeline">
+            <div class="pipe-node" data-pipe="0">
+              <div class="pipe-icon dice-icon">🎲</div>
+              <span>Dice</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-node" data-pipe="1">
+              <div class="pipe-icon">01</div>
+              <span>Bits</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-node" data-pipe="2">
+              <div class="pipe-icon">#</div>
+              <span>Number</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-node" data-pipe="3">
+              <div class="pipe-icon">Aa</div>
+              <span>Word</span>
+            </div>
+          </div>
+        </div>
+        <h1>Each word comes from dice</h1>
+        <p class="lede">
+          Roll 11 dice → turn odd/even into bits → get a number → look up a word.
+          You’ll try it on the next screen.
+        </p>
+        <div class="nav-row">
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-primary" data-next>Try it yourself</button>
+        </div>
+      </section>
 
-        <div id="full-seed" class="full-seed" hidden>
-          <p class="warn-inline">
-            Demo only. Do <strong>not</strong> put money on this seed.
-          </p>
-          <ol class="seed-list" id="seed-list"></ol>
-          <button type="button" class="linkish" id="btn-practice-again">
-            Roll a new practice seed
-          </button>
+      <!-- ===== STEP 3: Interactive roll ===== -->
+      <section class="step" data-step="3" id="step-3" hidden>
+        <p class="step-kicker">Your turn</p>
+        <h1>Roll the dice</h1>
+        <p class="lede">Tap the button. Watch 11 dice land, then a word appear.</p>
+
+        <div class="die-tray" id="die-tray" aria-hidden="true"></div>
+
+        <button type="button" class="btn-primary" id="btn-roll">Roll 11 dice</button>
+
+        <div class="word-reveal" id="word-reveal" hidden>
+          <div class="spark" aria-hidden="true"></div>
+          <p class="word-reveal-label">Practice word</p>
+          <p class="word-reveal-text" id="word-text">—</p>
+          <p class="word-reveal-meta" id="word-meta"></p>
         </div>
 
-        <details class="more">
-          <summary>Want 24 words instead?</summary>
-          <p>
-            Same idea, but 23 dice-words + 1 checksum word (256-bit security).
-            Most beginners are fine with 12.
-          </p>
-          <button type="button" class="btn-secondary" id="btn-practice-24">
-            Practice a 24-word seed
-          </button>
-        </details>
+        <div class="nav-row" id="roll-nav" hidden>
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-primary" data-next>Continue</button>
+        </div>
+        <p class="hint-wait" id="hint-wait">Roll once to unlock the next step</p>
       </section>
 
-      <!-- Real world -->
-      <section class="block card">
-        <h2>3. For real money — go offline</h2>
-        <p class="sub">
-          Never trust a website (including this one) with a seed you’ll fund.
-          Use paper, real dice, and an offline computer.
+      <!-- ===== STEP 4: What just happened ===== -->
+      <section class="step" data-step="4" id="step-4" hidden>
+        <div class="visual" aria-hidden="true">
+          <div class="transform-story" id="transform-story">
+            <div class="ts-row">
+              <span class="ts-label">Dice</span>
+              <span class="ts-val mono" id="ts-dice">—</span>
+            </div>
+            <div class="ts-arrow">↓ odd = 0 · even = 1</div>
+            <div class="ts-row">
+              <span class="ts-label">Bits</span>
+              <span class="ts-val mono" id="ts-bits">—</span>
+            </div>
+            <div class="ts-arrow">↓</div>
+            <div class="ts-row">
+              <span class="ts-label">Number</span>
+              <span class="ts-val mono" id="ts-index">—</span>
+            </div>
+            <div class="ts-arrow">↓ look up on list of 2,048</div>
+            <div class="ts-row highlight">
+              <span class="ts-label">Word</span>
+              <span class="ts-val word" id="ts-word">—</span>
+            </div>
+          </div>
+        </div>
+        <h1>That’s one seed word</h1>
+        <p class="lede">
+          For a real wallet you’d write this on paper — never type it into a
+          website. Next: how 12 words fit together.
         </p>
-        <ul class="checklist-lite">
-          <li>Print the offline guide (PDF)</li>
+        <div class="nav-row">
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-primary" data-next>See the full seed</button>
+        </div>
+      </section>
+
+      <!-- ===== STEP 5: Full seed structure ===== -->
+      <section class="step" data-step="5" id="step-5" hidden>
+        <div class="visual" aria-hidden="true">
+          <div class="seed-slots" id="seed-slots">
+            <!-- 12 slots animated by JS -->
+          </div>
+        </div>
+        <h1>A full seed is 12 words</h1>
+        <div class="two-facts">
+          <div class="fact">
+            <span class="fact-n">1–11</span>
+            <span class="fact-t">Made with dice (like you just did)</span>
+          </div>
+          <div class="fact fact-special">
+            <span class="fact-n">12</span>
+            <span class="fact-t">Special “checksum” word — calculated from the first 11</span>
+          </div>
+        </div>
+        <p class="lede tight">
+          All 12 together unlock your wallet. Miss one letter and it’s a different
+          (empty) wallet.
+        </p>
+        <div class="nav-row">
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-primary" data-next>Practice a full seed</button>
+        </div>
+      </section>
+
+      <!-- ===== STEP 6: Practice full seed ===== -->
+      <section class="step" data-step="6" id="step-6" hidden>
+        <p class="badge danger">Demo only — do not fund this</p>
+        <h1>Practice seed</h1>
+        <p class="lede">
+          We’ll generate a fake 12-word seed so you can see the shape. Treat it
+          as garbage — never use it for money.
+        </p>
+
+        <button type="button" class="btn-primary" id="btn-gen-seed">Generate practice seed</button>
+
+        <div id="practice-box" class="practice-box" hidden>
+          <ol class="seed-list" id="seed-list"></ol>
+          <button type="button" class="btn-ghost full" id="btn-gen-again">Generate another</button>
+        </div>
+
+        <div class="nav-row" id="practice-nav" hidden>
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-primary" data-next>How to do this for real</button>
+        </div>
+        <p class="hint-wait" id="practice-hint">Generate once to continue</p>
+      </section>
+
+      <!-- ===== STEP 7: Real world ===== -->
+      <section class="step" data-step="7" id="step-7" hidden>
+        <div class="visual" aria-hidden="true">
+          <div class="offline-icons">
+            <div class="off-item">
+              <div class="off-emoji">📄</div>
+              <span>Paper</span>
+            </div>
+            <div class="off-plus">+</div>
+            <div class="off-item">
+              <div class="off-emoji">🎲</div>
+              <span>Real dice</span>
+            </div>
+            <div class="off-plus">+</div>
+            <div class="off-item">
+              <div class="off-emoji">💻</div>
+              <span>Offline PC</span>
+            </div>
+          </div>
+        </div>
+        <h1>For real money: go offline</h1>
+        <p class="lede">
+          Never trust a website (including this one) with a seed you’ll fund.
+        </p>
+        <ol class="real-steps">
+          <li>Print the free offline guide (PDF)</li>
           <li>Roll physical dice for words 1–11</li>
           <li>Run the offline script for word 12</li>
-          <li>Write the 12 words on metal or paper — never a photo</li>
-        </ul>
+          <li>Store the words on metal or paper — never a photo</li>
+        </ol>
         <a
-          class="btn-big btn-outline"
+          class="btn-primary link-btn"
           href="https://github.com/veebch/Bip39-Dice"
           target="_blank"
           rel="noopener"
         >
-          Offline tools: veebch/Bip39-Dice ↗
+          Open veebch/Bip39-Dice ↗
         </a>
-        <p class="credit-line">
+        <p class="credit">
           Method by
-          <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener"
-            >veebch</a
-          >
-          — paper calculator + <code>24thword.py</code>. This site is just a
-          simple demo of that work.
+          <a href="https://github.com/veebch/Bip39-Dice" target="_blank" rel="noopener">veebch</a>
+          (paper calculator + <code>24thword.py</code>). This site is a simple demo of that work.
         </p>
+        <div class="nav-row">
+          <button type="button" class="btn-ghost" data-back>Back</button>
+          <button type="button" class="btn-ghost" id="btn-restart">Start over</button>
+        </div>
       </section>
-
-      <p class="footnote">
-        <a href="https://github.com/adamsimecka/bip39dice" target="_blank" rel="noopener"
-          >Source on GitHub</a
-        >
-        · Not affiliated with Coinkite / COLDCARD ·
-        <a
-          href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/"
-          target="_blank"
-          rel="noopener"
-          >Why dice matter (Mk3 advisory)</a
-        >
-      </p>
     </main>
 
     <div class="live" id="live" aria-live="polite"></div>

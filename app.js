@@ -1,126 +1,266 @@
 /**
- * bip39dice.com — simple beginner demo
+ * bip39dice.com — guided one-step-at-a-time tutorial
  * Method: veebch/Bip39-Dice
  */
 
 import { rollDie, facesToWord, candidateLastWords, WORDLIST } from './crypto.js';
 
-const $ = (s) => document.querySelector(s);
+const TOTAL_STEPS = 8; // 0..7
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-const dieRow = $('#die-row');
-const btnRoll = $('#btn-roll');
-const result = $('#result');
-const resultWord = $('#result-word');
-const resultMeta = $('#result-meta');
-const math = $('#math');
-const mathDetail = $('#math-detail');
-const btnShowMath = $('#btn-show-math');
-const btnPracticeFull = $('#btn-practice-full');
-const btnPractice24 = $('#btn-practice-24');
-const btnPracticeAgain = $('#btn-practice-again');
-const fullSeed = $('#full-seed');
-const seedList = $('#seed-list');
-const live = $('#live');
-
+let step = 0;
 let lastFaces = null;
-let practiceLength = 12;
+let lastWord = null;
+let lastIndex = null;
+let lastBits = null;
+let rolledOnce = false;
+let practicedOnce = false;
+
+const progressWrap = $('#progress-wrap');
+const progressFill = $('#progress-fill');
+const progressLabel = $('#progress-label');
+const live = $('#live');
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function renderEmptyDice() {
-  dieRow.innerHTML = Array.from({ length: 11 }, (_, i) => {
-    return `<div class="die-mini" data-i="${i}">?</div>`;
+function goTo(n) {
+  step = Math.max(0, Math.min(TOTAL_STEPS - 1, n));
+  $$('.step').forEach((el) => {
+    const s = Number(el.dataset.step);
+    const on = s === step;
+    el.hidden = !on;
+    el.classList.toggle('active', on);
+  });
+
+  // Progress: hide on welcome
+  if (step === 0) {
+    progressWrap.hidden = true;
+  } else {
+    progressWrap.hidden = false;
+    const pct = (step / (TOTAL_STEPS - 1)) * 100;
+    progressFill.style.width = `${pct}%`;
+    progressLabel.textContent = `${step} / ${TOTAL_STEPS - 1}`;
+  }
+
+  // Step enter hooks
+  if (step === 1) renderSeedPreview();
+  if (step === 2) animatePipeline();
+  if (step === 3) {
+    if (!rolledOnce) {
+      renderDieTray();
+      $('#word-reveal').hidden = true;
+      $('#roll-nav').hidden = true;
+      $('#hint-wait').hidden = false;
+      $('#btn-roll').textContent = 'Roll 11 dice';
+      $('#btn-roll').disabled = false;
+    }
+  }
+  if (step === 4) fillTransformStory();
+  if (step === 5) animateSeedSlots();
+  if (step === 6) {
+    if (!practicedOnce) {
+      $('#practice-box').hidden = true;
+      $('#practice-nav').hidden = true;
+      $('#practice-hint').hidden = false;
+    }
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  live.textContent = `Step ${step}`;
+}
+
+// ——— Navigation ———
+document.addEventListener('click', (e) => {
+  const next = e.target.closest('[data-next]');
+  const back = e.target.closest('[data-back]');
+  if (next) {
+    goTo(step + 1);
+  } else if (back) {
+    goTo(step - 1);
+  }
+});
+
+$('#btn-restart')?.addEventListener('click', () => {
+  rolledOnce = false;
+  practicedOnce = false;
+  lastFaces = lastWord = lastIndex = lastBits = null;
+  goTo(0);
+});
+
+// ——— Step 1: seed preview ———
+function renderSeedPreview() {
+  const el = $('#seed-preview');
+  if (!el || el.dataset.ready) return;
+  const demo = ['ocean', 'brave', 'sunset', 'river', 'candle', 'forest', 'silver', 'meadow', 'orbit', 'gentle', 'harbor', '???']
+  el.innerHTML = demo
+    .map(
+      (w, i) => `
+      <div class="slot ${i === 11 ? 'last' : ''}" style="animation-delay:${i * 0.05}s">
+        <span class="n">${i + 1}</span>
+        <span class="w">${w}</span>
+      </div>`
+    )
+    .join('');
+  el.dataset.ready = '1';
+}
+
+// ——— Step 2: pipeline ———
+async function animatePipeline() {
+  const nodes = $$('[data-pipe]');
+  nodes.forEach((n) => n.classList.remove('on'));
+  for (let i = 0; i < nodes.length; i++) {
+    await sleep(280);
+    nodes[i].classList.add('on');
+  }
+}
+
+// ——— Step 3: dice roll ———
+function renderDieTray() {
+  const tray = $('#die-tray');
+  tray.innerHTML = Array.from({ length: 11 }, (_, i) => {
+    return `<div class="die empty" data-i="${i}">?</div>`;
   }).join('');
 }
 
-async function animateAndRoll() {
-  btnRoll.disabled = true;
-  btnRoll.textContent = 'Rolling…';
-  result.hidden = true;
-  math.hidden = true;
-  btnShowMath.textContent = 'Show the simple math';
+async function rollDice() {
+  const btn = $('#btn-roll');
+  btn.disabled = true;
+  btn.textContent = 'Rolling…';
+  $('#word-reveal').hidden = true;
+  $('#roll-nav').hidden = true;
 
+  const cells = $$('#die-tray .die');
   const faces = [];
-  const cells = [...dieRow.querySelectorAll('.die-mini')];
 
   for (let i = 0; i < 11; i++) {
     const face = rollDie();
     faces.push(face);
     const el = cells[i];
     el.classList.add('rolling');
-    // quick flicker
-    for (let f = 0; f < 4; f++) {
+    el.classList.remove('empty', 'locked');
+    for (let f = 0; f < 5; f++) {
       el.textContent = String(rollDie());
-      await sleep(30);
+      await sleep(28);
     }
     el.textContent = String(face);
     el.classList.remove('rolling');
-    await sleep(25);
+    el.classList.add('locked');
+    await sleep(40);
   }
 
-  lastFaces = faces;
   const { word, index, bits } = facesToWord(faces);
+  lastFaces = faces;
+  lastWord = word;
+  lastIndex = index;
+  lastBits = bits;
+  rolledOnce = true;
 
-  resultWord.textContent = word;
-  resultMeta.textContent = `Word #${index + 1} on the official list of 2,048`;
-  mathDetail.textContent = `Dice: ${faces.join(' ')}  →  bits: ${bits.join('')}  →  index ${index}  →  “${word}”`;
-  result.hidden = false;
+  // Staggered beat then reveal
+  await sleep(200);
+  $('#word-text').textContent = word;
+  $('#word-meta').textContent = `#${index + 1} on the list of 2,048 words`;
+  const reveal = $('#word-reveal');
+  // re-trigger animation
+  reveal.hidden = false;
+  reveal.style.animation = 'none';
+  void reveal.offsetWidth;
+  reveal.style.animation = '';
 
-  btnRoll.disabled = false;
-  btnRoll.textContent = 'Roll again';
-  live.textContent = `Practice word: ${word}`;
+  $('#hint-wait').hidden = true;
+  $('#roll-nav').hidden = false;
+  btn.disabled = false;
+  btn.textContent = 'Roll again';
+  live.textContent = `Word: ${word}`;
 }
 
-btnRoll.addEventListener('click', animateAndRoll);
+$('#btn-roll')?.addEventListener('click', rollDice);
 
-btnShowMath.addEventListener('click', () => {
-  const open = math.hidden;
-  math.hidden = !open;
-  btnShowMath.textContent = open ? 'Hide the math' : 'Show the simple math';
-});
+// ——— Step 4: transform story ———
+function fillTransformStory() {
+  if (!lastFaces) {
+    // Fallback if user somehow skipped
+    const faces = Array.from({ length: 11 }, () => rollDie());
+    const r = facesToWord(faces);
+    lastFaces = faces;
+    lastBits = r.bits;
+    lastIndex = r.index;
+    lastWord = r.word;
+  }
+  $('#ts-dice').textContent = lastFaces.join(' · ');
+  $('#ts-bits').textContent = lastBits.join('');
+  $('#ts-index').textContent = String(lastIndex);
+  $('#ts-word').textContent = lastWord;
+}
 
-async function buildPracticeSeed(totalWords) {
-  practiceLength = totalWords;
+// ——— Step 5: seed slots animation ———
+async function animateSeedSlots() {
+  const el = $('#seed-slots');
+  el.innerHTML = Array.from({ length: 12 }, (_, i) => {
+    return `<div class="ss" data-i="${i}"><span class="num">${i + 1}</span><span>${
+      i === 11 ? '✓' : 'dice'
+    }</span></div>`;
+  }).join('');
+
+  await sleep(150);
+  for (let i = 0; i < 12; i++) {
+    const node = el.querySelector(`[data-i="${i}"]`);
+    node.classList.add('on');
+    if (i === 11) node.classList.add('checksum');
+    await sleep(90);
+  }
+}
+
+// ——— Step 6: practice full seed ———
+async function generatePractice(totalWords = 12) {
+  const btn = $('#btn-gen-seed');
+  const again = $('#btn-gen-again');
+  btn.disabled = true;
+  if (again) again.disabled = true;
+  btn.textContent = 'Generating…';
+
   const entropyWords = totalWords - 1;
   const words = [];
-
-  btnPracticeFull.disabled = true;
-  if (btnPractice24) btnPractice24.disabled = true;
-
   for (let i = 0; i < entropyWords; i++) {
     const faces = Array.from({ length: 11 }, () => rollDie());
     words.push(facesToWord(faces).word);
   }
-
   const candidates = await candidateLastWords(words, totalWords);
-  // Pick first candidate for simplicity in demo (or random)
   const last = candidates[Math.floor(Math.random() * candidates.length)].word;
   const all = [...words, last];
 
-  seedList.innerHTML = all
-    .map((w, i) => {
-      const isLast = i === all.length - 1;
-      return `<li class="${isLast ? 'checksum' : ''}"><span>${i + 1}.</span>${w}${
-        isLast ? ' · last word (checksum)' : ''
-      }</li>`;
-    })
-    .join('');
+  const list = $('#seed-list');
+  list.innerHTML = '';
+  $('#practice-box').hidden = false;
 
-  fullSeed.hidden = false;
-  btnPracticeFull.disabled = false;
-  if (btnPractice24) btnPractice24.disabled = false;
-  live.textContent = `Practice ${totalWords}-word seed ready`;
-  fullSeed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  for (let i = 0; i < all.length; i++) {
+    const li = document.createElement('li');
+    if (i === all.length - 1) li.className = 'checksum';
+    li.style.animationDelay = `${i * 0.04}s`;
+    li.innerHTML = `<span>${i + 1}.</span>${all[i]}${
+      i === all.length - 1 ? ' · checksum' : ''
+    }`;
+    list.appendChild(li);
+    await sleep(35);
+  }
+
+  practicedOnce = true;
+  $('#practice-hint').hidden = true;
+  $('#practice-nav').hidden = false;
+  btn.disabled = false;
+  btn.textContent = 'Generate practice seed';
+  if (again) again.disabled = false;
+  live.textContent = 'Practice seed ready';
 }
 
-btnPracticeFull.addEventListener('click', () => buildPracticeSeed(12));
-btnPracticeAgain?.addEventListener('click', () => buildPracticeSeed(practiceLength));
-btnPractice24?.addEventListener('click', () => buildPracticeSeed(24));
+$('#btn-gen-seed')?.addEventListener('click', () => generatePractice(12));
+$('#btn-gen-again')?.addEventListener('click', () => generatePractice(12));
 
-// Init
-renderEmptyDice();
+// ——— Init ———
+renderDieTray();
+goTo(0);
 
 if (WORDLIST.length !== 2048) {
   console.error('Wordlist incomplete');
