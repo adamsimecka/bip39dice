@@ -240,63 +240,29 @@
 
         <div class="nav-row">
           <button type="button" class="btn-ghost" data-back>Back</button>
-          <button type="button" class="btn-primary" data-next>Open the worksheet</button>
+          <button type="button" class="btn-primary" data-next>Try it yourself</button>
         </div>
       </section>
 
-      <!-- ===== STEP 4: Single worksheet lab ===== -->
+      <!-- ===== STEP 4: Practice lab (one clear action at a time) ===== -->
       <section class="step" data-step="4" id="step-4" hidden>
-        <div class="ws-header">
-          <div>
-            <p class="step-kicker" id="lab-kicker">Row 1 of 11</p>
-            <h1 id="lab-title">Roll the die</h1>
-          </div>
-          <button type="button" class="btn-ghost mini" id="btn-reset-sheet">Reset</button>
-        </div>
-        <p class="lede" id="lab-lede" hidden></p>
+        <p class="step-kicker" id="lab-kicker">Practice · 1 of 11</p>
+        <h1 id="lab-title">Roll a die</h1>
+        <p class="lede" id="lab-lede">
+          Eleven rolls make one seed word. Start with roll 1.
+        </p>
 
-        <!-- Fixed-height progress while rolling (no live table — avoids shift) -->
-        <div class="row-progress" id="row-progress" aria-label="Row progress"></div>
-
-        <!-- Summary only after all 11 rows (sum / word / done) -->
-        <div class="worksheet" id="worksheet" aria-label="Dice worksheet" hidden></div>
-
-        <!-- Fixed-height action slot: Roll screen OR Even/odd screen, never both -->
-        <div class="ws-action" id="ws-action">
-          <!-- filled by JS -->
-        </div>
+        <!-- One panel: roll, decide, add, or lookup -->
+        <div id="lab-main" class="lab-main"></div>
 
         <p class="quiz-feedback" id="ws-feedback" hidden></p>
 
-        <!-- Word list (shown only when looking up) — fills remaining viewport -->
-        <div id="ws-list-panel" hidden>
-          <div class="find-banner">
-            Find <strong id="find-index">—</strong> · tap the word
-          </div>
-          <div class="list-chrome tall">
-            <div class="list-tools">
-              <input
-                type="search"
-                id="list-search"
-                placeholder="Search # or word"
-                autocomplete="off"
-                spellcheck="false"
-              />
-            </div>
-            <div class="wordlist full" id="wordlist" role="list"></div>
-          </div>
-        </div>
+        <!-- Quiet trail of finished rolls (only while rolling) -->
+        <div class="lab-trail" id="lab-trail" hidden></div>
 
-        <div class="word-found" id="word-found" hidden>
-          <p class="word-found-label">Seed word</p>
-          <p class="word-found-text" id="word-found-text">—</p>
-          <p class="word-found-meta" id="word-found-meta"></p>
-        </div>
-
-        <div class="nav-row" id="lab-nav" hidden>
-          <button type="button" class="btn-ghost" id="lab-back">Back</button>
-          <button type="button" class="btn-primary" id="lab-next">Continue</button>
-        </div>
+        <p class="lab-restart">
+          <button type="button" class="linkish" id="btn-reset-sheet">Start over</button>
+        </p>
       </section>
 
       <!-- ===== STEP 5: Full seed — clear bridge ===== -->

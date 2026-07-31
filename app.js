@@ -88,8 +88,7 @@ function goTo(n) {
       if (hint) hint.hidden = false;
     }
 
-    // Lock page scroll on the lab so only the wordlist scrolls
-    document.body.classList.toggle('lab-step', step === 4);
+    if (step !== 4) document.body.classList.remove('lab-lookup');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (live) live.textContent = `Step ${step}`;
@@ -163,329 +162,257 @@ function renderSeedPreview() {
   el.dataset.ready = '1';
 }
 
-// ——— Step 4: single worksheet ———
-// Row loop: need-roll → need-bit → next row → sum → word → done
-let rollMode = 'sim';
-let sheetStage = 'row'; // row | sum | word | done
+// ——— Step 4: simple practice lab ———
+// Stages: roll → decide → (×11) → sum → word → done
+let sheetStage = 'roll'; // roll | decide | sum | word | done
 let activeRow = 0;
 let sumChecked = false;
-
-function bitsComplete() {
-  return userBits.every((b) => b === 0 || b === 1) && faces.every((f) => f != null);
-}
 
 function resetLab() {
   faces = Array(11).fill(null);
   userBits = Array(11).fill(null);
   correctIndex = null;
   correctWord = null;
-  rollMode = 'sim';
-  sheetStage = 'row';
+  sheetStage = 'roll';
   activeRow = 0;
   sumChecked = false;
+  clearLabFeedback();
+  renderLab();
+}
+
+function clearLabFeedback() {
   const fb = $('#ws-feedback');
   if (fb) {
     fb.hidden = true;
     fb.textContent = '';
+    fb.className = 'quiz-feedback';
   }
-  const list = $('#ws-list-panel');
-  if (list) list.hidden = true;
-  const found = $('#word-found');
-  if (found) found.hidden = true;
-  const nav = $('#lab-nav');
-  if (nav) nav.hidden = true;
-  const search = $('#list-search');
-  if (search) search.value = '';
-  renderWorksheet();
-  renderRowProgress();
-  renderActionPanel();
-  updateLabChrome();
 }
 
-function updateLabChrome() {
+function setLabFeedback(kind, text) {
+  const fb = $('#ws-feedback');
+  if (!fb) return;
+  fb.hidden = false;
+  fb.className = `quiz-feedback ${kind}`;
+  fb.textContent = text;
+}
+
+function finishedRolls() {
+  return faces
+    .map((f, i) => (f != null && userBits[i] != null ? { f, bit: userBits[i], i } : null))
+    .filter(Boolean);
+}
+
+function renderLab() {
   const kicker = $('#lab-kicker');
   const title = $('#lab-title');
   const lede = $('#lab-lede');
-  // Lede almost always hidden on step 4 — saves a full text block
-  if (lede) {
-    lede.textContent = '';
-    lede.hidden = true;
-  }
-  if (sheetStage === 'row') {
-    if (kicker) kicker.textContent = `Row ${Math.min(activeRow + 1, 11)} of 11`;
-    if (faces[activeRow] == null) {
-      if (title) title.textContent = 'Roll the die';
-    } else if (userBits[activeRow] == null) {
-      if (title) title.textContent = 'Even or odd?';
+  const main = $('#lab-main');
+  const trail = $('#lab-trail');
+  if (!main) return;
+
+  clearLabFeedback();
+  document.body.classList.toggle('lab-lookup', sheetStage === 'word');
+
+  if (sheetStage === 'roll') {
+    const n = activeRow + 1;
+    if (kicker) kicker.textContent = `Practice · roll ${n} of 11`;
+    if (title) title.textContent = 'Roll a die';
+    if (lede) {
+      lede.hidden = false;
+      lede.textContent =
+        n === 1
+          ? 'Eleven rolls make one seed word. Tap Roll, or tap the number from a real die.'
+          : `Roll ${n} of 11. Same as before.`;
     }
-  } else if (sheetStage === 'sum') {
-    if (kicker) kicker.textContent = 'Almost there';
-    if (title) title.textContent = 'Add the even rolls';
-  } else if (sheetStage === 'word') {
-    if (kicker) kicker.textContent = 'Last step';
-    if (title) title.textContent = 'Find your word';
-  } else if (sheetStage === 'done') {
-    if (kicker) kicker.textContent = 'Done';
-    if (title) title.textContent = 'You made a seed word';
-  }
-}
-
-/** Human-readable add for a row: +weight if even, +0 if odd */
-function rowAddLabel(bit, weight) {
-  if (bit == null) return '—';
-  if (bit === 1) return `+${weight}`;
-  return '+0';
-}
-
-/** Equation showing only what you add, e.g. 1 + 0 + 4 + 0 + 16 = 21 */
-function buildSumEquation(revealTotal) {
-  if (userBits.some((b) => b == null)) return null;
-  const parts = userBits.map((bit, i) => (bit === 1 ? String(POWERS[i]) : '0'));
-  const left = parts.join(' + ');
-  const right = revealTotal && correctIndex != null ? String(correctIndex) : '?';
-  return `${left} = ${right}`;
-}
-
-/** Friendly line: +1 (even) +4 (even) +16 (even) = … */
-function buildFriendlyAddends(revealTotal) {
-  if (userBits.some((b) => b == null)) return null;
-  const kept = [];
-  userBits.forEach((bit, i) => {
-    if (bit === 1) kept.push(`+${POWERS[i]}`);
-  });
-  const left = kept.length ? kept.join(' ') : '+0';
-  const right = revealTotal && correctIndex != null ? String(correctIndex) : '?';
-  return `${left}  =  ${right}`;
-}
-
-function renderWorksheet() {
-  const el = $('#worksheet');
-  if (!el) return;
-
-  // During row fill: hide the sheet entirely — only progress dots + action.
-  // Showing a live table under/above Roll causes layout shift on every roll.
-  if (sheetStage === 'row') {
-    el.className = 'worksheet focus';
-    el.hidden = true;
-    el.innerHTML = '';
-    return;
-  }
-
-  el.hidden = false;
-
-  // Sum / word / done: compact summary only
-  if (sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
-    const friendly = buildFriendlyAddends(sumChecked);
-    const facesStr = faces.map((f) => f ?? '·').join(' ');
-    el.className = 'worksheet compact mini';
-    el.innerHTML = `
-      <div class="ws-summary mini">
-        <div class="ws-summary-line"><span>Rolls</span><strong>${facesStr}</strong></div>
-        <div class="ws-summary-line eq"><span>Sum</span><strong>${friendly || '…'}</strong></div>
+    main.innerHTML = `
+      <button type="button" class="btn-primary" id="btn-roll-one">Roll</button>
+      <p class="lab-or">or pick what your die showed</p>
+      <div class="face-pad" id="face-pad">
+        ${[1, 2, 3, 4, 5, 6].map((n) => `<button type="button" data-face="${n}">${n}</button>`).join('')}
       </div>`;
+    $('#btn-roll-one')?.addEventListener('click', () => applyFace(activeRow, rollDie()));
+    $$('#face-pad button').forEach((btn) => {
+      btn.addEventListener('click', () => applyFace(activeRow, Number(btn.dataset.face)));
+    });
+    renderTrail(trail);
     return;
   }
 
-  el.innerHTML = '';
-}
-
-function renderRowProgress() {
-  const el = $('#row-progress');
-  if (!el) return;
-  if (sheetStage !== 'row') {
-    el.hidden = true;
-    el.innerHTML = '';
-    return;
-  }
-  el.hidden = false;
-  const dots = Array.from({ length: 11 }, (_, d) => {
-    const done = faces[d] != null && userBits[d] != null;
-    const on = d === activeRow;
-    return `<span class="ws-dot ${done ? 'done' : ''} ${on ? 'on' : ''}" title="Row ${d + 1}"></span>`;
-  }).join('');
-  el.innerHTML = `
-    <div class="ws-dots" aria-hidden="true">${dots}</div>
-    <span class="ws-progress-label">${Math.min(activeRow + 1, 11)}/11</span>`;
-}
-
-function renderActionPanel() {
-  const panel = $('#ws-action');
-  if (!panel) return;
-  const fb = $('#ws-feedback');
-  if (fb) fb.hidden = true;
-
-  // Keep a stable slot height while looping rows so Roll ↔ Even/odd never jumps
-  panel.classList.toggle('row-slot', sheetStage === 'row');
-
-  if (sheetStage === 'row') {
+  if (sheetStage === 'decide') {
     const face = faces[activeRow];
-    if (face == null) {
-      // Roll screen only — nothing stacked underneath
-      panel.innerHTML = `
-        <div class="row-screen roll-screen">
-          <div class="mode-row slim" role="group">
-            <button type="button" class="mode-btn ${
-              rollMode === 'sim' ? 'active' : ''
-            }" data-roll-mode="sim">Simulate</button>
-            <button type="button" class="mode-btn ${
-              rollMode === 'phys' ? 'active' : ''
-            }" data-roll-mode="phys">Real die</button>
-          </div>
-          <div id="sim-controls" ${rollMode === 'phys' ? 'hidden' : ''}>
-            <button type="button" class="btn-primary" id="btn-roll-one">Roll</button>
-          </div>
-          <div id="phys-controls" ${rollMode === 'sim' ? 'hidden' : ''}>
-            <div class="face-pad slim" id="face-pad">
-              ${[1, 2, 3, 4, 5, 6]
-                .map((n) => `<button type="button" data-face="${n}">${n}</button>`)
-                .join('')}
-            </div>
-          </div>
-        </div>`;
-      wireRollControls();
-    } else {
-      // Separate "page": even/odd only (replaces roll UI, same slot)
-      const weight = POWERS[activeRow];
-      panel.innerHTML = `
-        <div class="row-screen bit-screen">
-          <div class="quiz-die" id="bit-quiz-die">${face}</div>
-          <p class="phase-note bit-note">
-            Even → <strong>+${weight}</strong> · Odd → <strong>+0</strong>
-          </p>
-          <div class="quiz-actions">
-            <button type="button" class="quiz-btn" id="btn-odd">Odd → skip</button>
-            <button type="button" class="quiz-btn" id="btn-even">Even → +${weight}</button>
-          </div>
-        </div>`;
-      $('#btn-odd')?.addEventListener('click', () => answerBit(0));
-      $('#btn-even')?.addEventListener('click', () => answerBit(1));
+    const n = activeRow + 1;
+    if (kicker) kicker.textContent = `Practice · roll ${n} of 11`;
+    if (title) title.textContent = 'Even or odd?';
+    if (lede) {
+      lede.hidden = false;
+      lede.innerHTML = `You rolled <strong>${face}</strong>. Even rolls count. Odd rolls are skipped.`;
     }
-  } else if (sheetStage === 'sum') {
+    main.innerHTML = `
+      <div class="lab-die" aria-hidden="true">${face}</div>
+      <div class="lab-choice">
+        <button type="button" class="quiz-btn" id="btn-odd">Odd — skip</button>
+        <button type="button" class="quiz-btn" id="btn-even">Even — count</button>
+      </div>`;
+    $('#btn-odd')?.addEventListener('click', () => answerBit(0));
+    $('#btn-even')?.addEventListener('click', () => answerBit(1));
+    renderTrail(trail);
+    return;
+  }
+
+  if (sheetStage === 'sum') {
+    recomputeAnswer();
+    if (kicker) kicker.textContent = 'Practice · add them up';
+    if (title) title.textContent = 'Add the even rolls';
+    if (lede) {
+      lede.hidden = false;
+      lede.textContent =
+        'Each roll has a weight: 1, 2, 4, 8… up to 1024. Add the weights only for even rolls.';
+    }
+    const rows = faces
+      .map((f, i) => {
+        const even = userBits[i] === 1;
+        const add = even ? POWERS[i] : 0;
+        return `<li class="${even ? 'keep' : 'skip'}">
+          <span class="lr-n">${i + 1}.</span>
+          <span class="lr-face">rolled ${f}</span>
+          <span class="lr-eo">${even ? 'even' : 'odd'}</span>
+          <span class="lr-add">${even ? `+${POWERS[i]}` : '+0'}</span>
+        </li>`;
+      })
+      .join('');
     const kept = userBits
       .map((b, i) => (b === 1 ? POWERS[i] : null))
       .filter((x) => x != null);
-    panel.innerHTML = `
-      <div class="sum-hint compact">
-        <p class="sum-chips">${
-          kept.length
-            ? kept.map((n) => `<span class="chip">+${n}</span>`).join('')
-            : '<span class="chip">+0</span>'
-        }</p>
-      </div>
-      <form class="answer-form inline" id="sum-form">
-        <label class="sr-only" for="sum-input">Total</label>
+    const eq = kept.length ? kept.map((n) => n).join(' + ') : '0';
+    main.innerHTML = `
+      <ol class="lab-sheet">${rows}</ol>
+      <p class="lab-eq">${eq} = ?</p>
+      <form class="answer-form" id="sum-form">
+        <label class="sr-only" for="sum-input">Your total</label>
         <input type="number" id="sum-input" min="0" max="2047" inputmode="numeric"
-          placeholder="Total" autocomplete="off" required />
-        <button type="submit" class="btn-primary">Check</button>
+          placeholder="Type the total" autocomplete="off" required />
+        <button type="submit" class="btn-primary">Check total</button>
       </form>`;
     $('#sum-form')?.addEventListener('submit', onSumSubmit);
-  } else if (sheetStage === 'word') {
-    panel.innerHTML = '';
-  } else if (sheetStage === 'done') {
-    panel.innerHTML = '';
-  } else {
-    panel.innerHTML = '';
+    if (trail) {
+      trail.hidden = true;
+      trail.innerHTML = '';
+    }
+    return;
+  }
+
+  if (sheetStage === 'word') {
+    if (kicker) kicker.textContent = 'Practice · look it up';
+    if (title) title.textContent = 'Find your word';
+    if (lede) {
+      lede.hidden = false;
+      lede.innerHTML = `Your number is <strong>${correctIndex}</strong>. Find it on the list and tap the word.`;
+    }
+    main.innerHTML = `
+      <div class="list-chrome tall lab-list">
+        <div class="list-tools">
+          <input type="search" id="list-search" placeholder="Search number or word"
+            autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="wordlist full" id="wordlist" role="list"></div>
+      </div>`;
+    renderFullWordlist('');
+    $('#list-search')?.addEventListener('input', (e) => {
+      renderFullWordlist(e.target.value);
+    });
+    if (trail) {
+      trail.hidden = true;
+      trail.innerHTML = '';
+    }
+    return;
+  }
+
+  if (sheetStage === 'done') {
+    if (kicker) kicker.textContent = 'Practice · done';
+    if (title) title.textContent = 'You made a seed word';
+    if (lede) {
+      lede.hidden = false;
+      lede.textContent = 'That’s one of the twelve words in a Bitcoin seed.';
+    }
+    main.innerHTML = `
+      <div class="word-found lab-found">
+        <p class="word-found-label">Seed word</p>
+        <p class="word-found-text">${correctWord}</p>
+        <p class="word-found-meta">List number ${correctIndex}</p>
+      </div>
+      <button type="button" class="btn-primary" id="lab-next">Continue</button>`;
+    $('#lab-next')?.addEventListener('click', () => goTo(5));
+    if (trail) {
+      trail.hidden = true;
+      trail.innerHTML = '';
+    }
+    return;
   }
 }
 
-function wireRollControls() {
-  $$('.mode-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      rollMode = btn.dataset.rollMode;
-      renderActionPanel();
-    });
+function renderTrail(trail) {
+  if (!trail) return;
+  const done = finishedRolls();
+  if (!done.length || sheetStage === 'sum' || sheetStage === 'word' || sheetStage === 'done') {
+    trail.hidden = true;
+    trail.innerHTML = '';
+    return;
+  }
+  trail.hidden = false;
+  const parts = done.map(({ f, bit }) => {
+    const tag = bit === 1 ? 'count' : 'skip';
+    return `<span class="trail-item ${tag}">${f}<small>${tag}</small></span>`;
   });
-  $('#btn-roll-one')?.addEventListener('click', async () => {
-    const face = rollDie();
-    await applyFace(activeRow, face, true);
-  });
-  $$('#face-pad button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      applyFace(activeRow, Number(btn.dataset.face), false);
-    });
-  });
+  trail.innerHTML = `<span class="trail-label">So far</span> ${parts.join('')}`;
 }
 
-async function applyFace(index, face, animate) {
+function applyFace(index, face) {
   faces[index] = face;
-  // clear bit if re-rolling
   userBits[index] = null;
-  recomputeAnswer();
-  // Swap to the even/odd screen in the same fixed slot — no extra chrome below Roll
-  renderWorksheet();
-  renderRowProgress();
-  renderActionPanel();
-  updateLabChrome();
-  if (live) live.textContent = `Row ${index + 1}: rolled ${face}`;
+  sheetStage = 'decide';
+  renderLab();
+  if (live) live.textContent = `Rolled ${face}`;
 }
 
 function answerBit(chosenBit) {
   const face = faces[activeRow];
   const correct = face % 2 === 0 ? 1 : 0;
-  const fb = $('#ws-feedback');
   if (chosenBit !== correct) {
-    if (fb) {
-      fb.hidden = false;
-      fb.className = 'quiz-feedback bad';
-      fb.textContent =
-        correct === 0
-          ? `${face} is odd → skip this row (add 0). Try again.`
-          : `${face} is even → add the weight ${POWERS[activeRow]}. Try again.`;
-    }
+    setLabFeedback(
+      'bad',
+      correct === 1
+        ? `${face} is even (2, 4, or 6). Choose Even — count.`
+        : `${face} is odd (1, 3, or 5). Choose Odd — skip.`
+    );
     return;
   }
   userBits[activeRow] = correct;
-  if (fb) fb.hidden = true;
-  // advance row or go to sum
   if (activeRow < 10) {
     activeRow++;
+    sheetStage = 'roll';
   } else {
-    // all rows done — summary + add step (the "sheet" lives here)
     recomputeAnswer();
     sheetStage = 'sum';
   }
-  renderWorksheet();
-  renderRowProgress();
-  renderActionPanel();
-  updateLabChrome();
+  renderLab();
 }
 
 function onSumSubmit(e) {
   e.preventDefault();
   const val = Number($('#sum-input')?.value);
   recomputeAnswer();
-  const fb = $('#ws-feedback');
   if (val !== correctIndex) {
-    if (fb) {
-      fb.hidden = false;
-      fb.className = 'quiz-feedback bad';
-      fb.textContent = 'Not that total. Add only the weights from even rolls.';
-    }
+    setLabFeedback('bad', 'Not quite. Add only the weights next to even rolls.');
     return;
   }
   sumChecked = true;
-  if (fb) {
-    fb.hidden = false;
-    fb.className = 'quiz-feedback good';
-    fb.textContent = `Correct — ${correctIndex}.`;
-  }
-  renderWorksheet();
-  renderRowProgress();
-  // Move to word lookup quickly — keep chrome minimal so list fits
+  setLabFeedback('good', `Yes — ${correctIndex}.`);
   setTimeout(() => {
     sheetStage = 'word';
-    if (fb) fb.hidden = true;
-    $('#ws-list-panel').hidden = false;
-    $('#find-index').textContent = String(correctIndex);
-    $('#list-search').value = '';
-    renderFullWordlist('');
-    renderActionPanel();
-    renderRowProgress();
-    updateLabChrome();
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
-    const list = $('#wordlist');
-    if (list) list.scrollTop = 0;
-  }, 280);
+    renderLab();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, 450);
 }
 
 function renderFullWordlist(query) {
@@ -496,7 +423,6 @@ function renderFullWordlist(query) {
   let scrollToIdx = null;
 
   if (!q) {
-    // Full list always visible — scrollable
     for (let i = 0; i < 2048; i++) items.push(i);
   } else if (/^\d+$/.test(q)) {
     const n = Number(q);
@@ -504,7 +430,6 @@ function renderFullWordlist(query) {
       el.innerHTML = `<p class="list-empty">Numbers run from 0 to 2047.</p>`;
       return;
     }
-    // Show a window around the typed number so the match is easy to spot
     const start = Math.max(0, n - 12);
     const end = Math.min(2048, n + 40);
     for (let i = start; i < end; i++) items.push(i);
@@ -517,7 +442,7 @@ function renderFullWordlist(query) {
   }
 
   if (!items.length) {
-    el.innerHTML = `<p class="list-empty">No matches. Clear search to see the full list.</p>`;
+    el.innerHTML = `<p class="list-empty">No matches. Clear the search to see the full list.</p>`;
     return;
   }
 
@@ -536,51 +461,24 @@ function renderFullWordlist(query) {
 
   if (scrollToIdx != null) {
     requestAnimationFrame(() => {
-      const row = el.querySelector(`[data-idx="${scrollToIdx}"]`);
-      row?.scrollIntoView({ block: 'center' });
+      el.querySelector(`[data-idx="${scrollToIdx}"]`)?.scrollIntoView({ block: 'center' });
     });
   }
 }
 
 function pickWord(idx, btn) {
-  const fb = $('#ws-feedback');
   if (idx !== correctIndex) {
-    if (fb) {
-      fb.hidden = false;
-      fb.className = 'quiz-feedback bad';
-      fb.textContent = `#${idx} is “${WORDLIST[idx]}”. You need #${correctIndex}.`;
-    }
+    setLabFeedback('bad', `That’s #${idx} “${WORDLIST[idx]}”. You need #${correctIndex}.`);
     btn.classList.add('wrong');
     setTimeout(() => btn.classList.remove('wrong'), 400);
     return;
   }
-  btn.classList.add('hit', 'land');
-  if (fb) fb.hidden = true;
   sheetStage = 'done';
-  $('#word-found-text').textContent = correctWord;
-  $('#word-found-meta').textContent = `Index ${correctIndex}`;
-  $('#word-found').hidden = false;
-  $('#lab-nav').hidden = false;
-  renderWorksheet();
-  renderRowProgress();
-  renderActionPanel();
-  updateLabChrome();
+  renderLab();
   if (live) live.textContent = `Word: ${correctWord}`;
 }
 
-$('#list-search')?.addEventListener('input', (e) => {
-  renderFullWordlist(e.target.value);
-});
-
 $('#btn-reset-sheet')?.addEventListener('click', () => resetLab());
-
-$('#lab-next')?.addEventListener('click', () => {
-  if (sheetStage === 'done') goTo(5);
-});
-
-$('#lab-back')?.addEventListener('click', () => {
-  goTo(3);
-});
 
 // ——— Step 5 ———
 async function animateSeedSlots() {

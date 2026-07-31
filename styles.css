@@ -1315,210 +1315,216 @@ a:hover {
   overflow-x: hidden;
 }
 
-#step-4 #ws-list-panel {
-  margin-top: 0.15rem;
-  flex: 1 1 auto;
-  min-height: 0;
+/* ——— Step 4 practice lab (simple, one action at a time) ——— */
+#step-4 .lede {
+  margin-bottom: 0.85rem;
+}
+
+.lab-main {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-#step-4 #ws-list-panel .list-chrome.tall {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-width: 2px;
-  box-shadow: 1px 1px 0 var(--ink);
-}
-
-#step-4 #ws-list-panel .list-tools {
-  flex-shrink: 0;
-  padding: 0.35rem;
-}
-
-#step-4 #ws-list-panel .list-tools input {
-  padding: 0.45rem 0.55rem;
-  font-size: 0.88rem;
-}
-
-#step-4 #ws-list-panel .wordlist.full {
-  height: auto;
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-#step-4 .find-banner {
-  padding: 0.4rem 0.55rem;
-  font-size: 0.85rem;
-  margin-bottom: 0.3rem;
-  flex-shrink: 0;
-}
-
-#step-4 .find-banner strong {
-  font-size: 1.05rem;
-}
-
-#step-4 .word-found {
-  margin-top: 0.25rem;
-  padding: 0.45rem 0.55rem;
-  flex-shrink: 0;
-}
-
-#step-4 .word-found-text {
-  font-size: clamp(1.25rem, 5.5vw, 1.6rem);
-}
-
-#step-4 .quiz-card.compact {
-  padding: 0.5rem 0.5rem;
-}
-
-#step-4 .quiz-card.compact.flat {
-  padding: 0.45rem 0.5rem;
-}
-
-#step-4 .quiz-flat-row {
-  display: flex;
-  align-items: center;
   gap: 0.65rem;
-  text-align: left;
-  margin-bottom: 0.4rem;
 }
 
-#step-4 .quiz-card.compact .quiz-die {
-  width: 44px;
-  height: 44px;
-  font-size: 1.35rem;
+.lab-or {
   margin: 0;
-  flex-shrink: 0;
-  border-width: 2px;
-  box-shadow: 2px 2px 0 var(--ink);
-}
-
-#step-4 .quiz-flat-row .phase-note {
-  margin: 0;
+  text-align: center;
   font-size: 0.82rem;
-  line-height: 1.3;
-}
-
-#step-4 .quiz-actions {
-  margin-top: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.35rem;
-}
-
-#step-4 .quiz-btn {
-  padding: 0.55rem 0.35rem;
-  font-size: 0.85rem;
-}
-
-#step-4 .phase-note {
-  margin: 0.25rem 0 0;
-  font-size: 0.82rem;
-}
-
-#step-4 .phase-note.tight {
-  margin: 0 0 0.25rem;
-}
-
-#step-4 .sum-hint.compact {
-  padding: 0.4rem 0.5rem;
-  margin-bottom: 0.35rem;
-  box-shadow: 1px 1px 0 var(--ink);
-}
-
-#step-4 .sum-hint.compact .chip {
-  font-size: 0.78rem;
-  padding: 0.2rem 0.4rem;
-}
-
-#step-4 .answer-form {
-  margin-top: 0;
-  gap: 0.35rem;
-}
-
-#step-4 .answer-form.inline {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.35rem;
-  align-items: stretch;
-}
-
-#step-4 .answer-form.inline .btn-primary {
-  width: auto;
-  padding: 0.55rem 0.85rem;
-  white-space: nowrap;
-}
-
-#step-4 .answer-form input {
-  font-size: 1rem;
-  padding: 0.5rem 0.55rem;
-}
-
-#step-4 .nav-row {
-  margin-top: 0.25rem;
-}
-
-#step-4 .mode-row {
-  margin-bottom: 0.35rem;
-}
-
-#step-4 .mode-row.slim {
-  gap: 0.3rem;
-  margin-bottom: 0.35rem;
-}
-
-#step-4 .mode-row.slim .mode-btn {
-  padding: 0.4rem 0.35rem;
-  font-size: 0.8rem;
-  box-shadow: 1px 1px 0 var(--ink);
+  color: var(--muted);
 }
 
 #step-4 .face-pad {
-  margin-bottom: 0;
-}
-
-#step-4 .face-pad.slim {
-  gap: 0.3rem;
   grid-template-columns: repeat(6, 1fr);
-}
-
-#step-4 .face-pad.slim button {
-  padding: 0.45rem 0.15rem;
-  font-size: 1rem;
-  box-shadow: 1px 1px 0 var(--ink);
+  gap: 0.35rem;
+  margin: 0;
 }
 
 #step-4 .face-pad button {
-  padding: 0.45rem;
+  padding: 0.55rem 0.2rem;
   font-size: 1.05rem;
 }
 
-#step-4 .btn-primary {
-  padding: 0.65rem 0.75rem;
+.lab-die {
+  width: 72px;
+  height: 72px;
+  margin: 0.15rem auto 0.25rem;
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  background: linear-gradient(145deg, #fffef8, #e8e0d0);
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: 2.1rem;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.lab-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.lab-choice .quiz-btn {
+  padding: 0.85rem 0.5rem;
   font-size: 0.95rem;
 }
 
-/* Short viewports: even denser */
-@media (max-height: 720px) {
-  #step-4 .ws-row {
-    padding: 0.22rem 0.35rem;
-  }
+.lab-sheet {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  box-shadow: 2px 2px 0 var(--ink);
+  max-height: min(42vh, 280px);
+  overflow-y: auto;
+}
 
-  #step-4 h1 {
-    font-size: 1.15rem;
-  }
+.lab-sheet li {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr auto auto;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.4rem 0.55rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
 
-  #step-4 #ws-list-panel .wordlist.full {
-    min-height: 100px;
-  }
+.lab-sheet li:last-child {
+  border-bottom: none;
+}
+
+.lab-sheet li.keep {
+  background: rgba(194, 59, 34, 0.07);
+  color: var(--ink);
+}
+
+.lab-sheet li.keep .lr-add {
+  color: var(--brick);
+  font-weight: 700;
+}
+
+.lab-sheet .lr-n {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.lab-eq {
+  margin: 0.15rem 0 0;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--brick);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+#step-4 .answer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
+}
+
+#step-4 .answer-form input {
+  font-size: 1.05rem;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  font-family: var(--mono);
+  width: 100%;
+}
+
+.lab-list .wordlist.full {
+  height: min(48vh, 340px);
+  max-height: min(48vh, 340px);
+  overflow-y: auto;
+}
+
+.lab-found {
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+
+.lab-trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.lab-trail[hidden] {
+  display: none !important;
+}
+
+.trail-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-right: 0.15rem;
+}
+
+.trail-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1.75rem;
+  padding: 0.2rem 0.3rem;
+  border: 1.5px solid var(--line-strong);
+  background: var(--cream);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.trail-item small {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.trail-item.count {
+  border-color: var(--brick);
+  color: var(--brick);
+}
+
+.trail-item.skip {
+  opacity: 0.7;
+}
+
+.lab-restart {
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+button.linkish {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0.35rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+button.linkish:hover {
+  color: var(--ink);
 }
 
 .wordlist.full::before,
@@ -1582,160 +1588,8 @@ a:hover {
   box-shadow: 1px 1px 0 var(--ink);
 }
 
-/* ——— Step 4 lab: fit the phone viewport; only wordlist scrolls ——— */
-body.lab-step {
-  overflow: hidden;
-  height: 100dvh;
-  max-height: 100dvh;
-}
-
-body.lab-step .top {
-  flex-shrink: 0;
-}
-
-body.lab-step .stage {
-  padding-top: 0.4rem;
-  padding-bottom: 0.5rem;
-  /* header is ~57px; use flexible remaining height */
-  height: calc(100dvh - 57px);
-  max-height: calc(100dvh - 57px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-#step-4 {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  max-width: 100%;
-}
-
-#step-4 .ws-header {
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-
-#step-4 .ws-header h1 {
-  font-size: clamp(1.15rem, 4.5vw, 1.4rem);
-  margin: 0;
-  line-height: 1.15;
-}
-
-#step-4 .step-kicker {
-  margin: 0 0 0.1rem;
-  font-size: 0.68rem;
-}
-
-#step-4 .lede[hidden] {
-  display: none !important;
-}
-
-#step-4 .ws-action {
-  flex-shrink: 0;
-  margin-bottom: 0;
-}
-
-/* Fixed slot while rolling: Roll and Even/odd swap in place — no height jump */
-#step-4 .ws-action.row-slot {
-  min-height: 148px;
-  display: flex;
-  flex-direction: column;
-}
-
-#step-4 .ws-action.row-slot .row-screen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 0.45rem;
-}
-
-#step-4 .row-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  min-height: 28px;
-  padding: 0.15rem 0.1rem 0.35rem;
-  flex-shrink: 0;
-}
-
-#step-4 .row-progress[hidden] {
-  display: none !important;
-}
-
-#step-4 .row-progress .ws-dots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
-
-#step-4 .row-progress .ws-progress-label {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-#step-4 .bit-screen {
-  align-items: center;
-  text-align: center;
-}
-
-#step-4 .bit-screen .quiz-die {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto;
-  font-size: 1.6rem;
-  border: 2px solid var(--ink);
-  border-radius: 8px;
-  background: linear-gradient(145deg, #fffef8, #e8e0d0);
-  display: grid;
-  place-items: center;
-  font-family: var(--display);
-  font-weight: 700;
-  box-shadow: 2px 2px 0 var(--ink);
-}
-
-#step-4 .bit-screen .bit-note {
-  margin: 0;
-  font-size: 0.88rem;
-  color: var(--ink-soft);
-}
-
-#step-4 .bit-screen .quiz-actions {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.4rem;
-  margin-top: 0.15rem;
-}
-
-#step-4 .bit-screen .quiz-btn {
-  padding: 0.7rem 0.4rem;
-  font-size: 0.9rem;
-}
-
-#step-4 .worksheet[hidden] {
-  display: none !important;
-}
-
 #step-4 .quiz-feedback {
-  flex-shrink: 0;
-  margin: 0;
-  font-size: 0.82rem;
-}
-
-#step-4 .nav-row {
-  flex-shrink: 0;
-  margin-top: 0.25rem;
+  margin: 0.35rem 0 0;
 }
 
 .worksheet {
